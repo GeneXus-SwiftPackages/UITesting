@@ -1,0 +1,50 @@
+{
+  "pins" : [
+    {
+      "identity" : "gxdatalayer",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/GeneXus-SwiftPackages/GXDataLayer.git",
+      "state" : {
+        "revision" : "7afe5d95fa7fcf1c8cbe46f163d2438f75237193",
+        "version" : "1.0.0-beta.20230613192339"
+      }
+    },
+    {
+      "identity" : "gxfoundation",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/GeneXus-SwiftPackages/GXFoundation.git",
+      "state" : {
+        "revision" : "fe582506dac4ad7ca3fa48edb31e8b748f223ed3",
+        "version" : "1.0.0-beta.20230613192339"
+      }
+    },
+    {
+      "identity" : "gxobjectsmodel",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/GeneXus-SwiftPackages/GXObjectsModel.git",
+      "state" : {
+        "revision" : "bd2dc35e538b7f3b16d55ff0e30aaa5659870a37",
+        "version" : "1.0.0-beta.20230613192339"
+      }
+    },
+    {
+      "identity" : "gxstandardclasses",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/GeneXus-SwiftPackages/GXStandardClasses.git",
+      "state" : {
+        "revision" : "145135b83a4d7fd9685b9ce867b64ad7c71401d8",
+        "version" : "1.0.0-beta.20230613192339"
+      }
+    },
+    {
+      "identity" : "yajl",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/GeneXus-SwiftPackages/YAJL.git",
+      "state" : {
+        "revision" : "fbeb8528b418a9c5197bd616acf567fa2d8d8c9b",
+        "version" : "1.0.0-beta.20230613192339"
+      }
+    }
+  ],
+  "version" : 2
+}
