@@ -2,10 +2,10 @@
 //  GXUITestingAPI.swift
 //
 
-import Foundation
 import XCTest
 
-import GXStandardClasses
+@_exported import Foundation
+@_exported import GXStandardClasses
 import GXObjectsModel
 
 // MARK: - GeneXus UI Test object
