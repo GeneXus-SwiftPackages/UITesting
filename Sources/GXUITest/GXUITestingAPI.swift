@@ -1105,7 +1105,7 @@ fileprivate extension CGImage {
 	}
 }
 
-final internal class genexus_client_SdtClientInformation : GXStandardClasses.GXUserType {
+final public class genexus_client_SdtClientInformation : GXStandardClasses.GXUserType {
 	public lazy var gxTv_SdtClientInformation_Id: String = GXClientInformation.deviceUUID(for: self) ?? ""
 
 	public lazy var gxTv_SdtClientInformation_Osname: String = GXClientInformation.osName()
