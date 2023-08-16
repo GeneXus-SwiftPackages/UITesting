@@ -17,7 +17,7 @@ jobs:
     build:
         name: Build & Test
 
-        runs-on: [macos]
+        runs-on: [macos-13]
     
         defaults:
           run:
@@ -39,4 +39,5 @@ jobs:
             run: xcodebuild test -scheme GXUITest -destination "platform=iOS Simulator,name=iPhone 14,OS=latest"
 
           - name: Run integration tests
+            working-directory: Tests/IntegrationTests/UITestingSampleApp
             run: xcodebuild test -scheme UITestingSampleApp -destination "platform=iOS Simulator,name=iPhone 14,OS=latest" 
