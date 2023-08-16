@@ -19,6 +19,14 @@ struct ContentView: View {
     }
 }
 
+#if swift(>=5.9) // Xcode 15
 #Preview {
-    ContentView()
+	ContentView()
 }
+#else
+struct ContentView_Previews: PreviewProvider {
+	static var previews: some View {
+		ContentView()
+	}
+}
+#endif // Xcode 15
