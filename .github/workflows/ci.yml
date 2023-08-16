@@ -1,0 +1,42 @@
+name: Build & Test
+
+on: 
+  workflow_dispatch:
+  pull_request:
+    branches:
+      - 'main'
+      - 'develop'
+      - 'release/*'
+  push:
+    branches: 
+      - 'main'
+      - 'develop'
+      - 'release/*'
+
+jobs:
+    build:
+        name: Build & Test
+
+        runs-on: [macos]
+    
+        defaults:
+          run:
+            shell: zsh {0}
+
+        concurrency: 
+          group: build-${{ github.ref }}
+
+        steps:
+          - name: Checkout
+            uses: actions/checkout@v3
+    
+          - name: Build Package
+            #run: swift build -c release
+            run: xcodebuild build -scheme GXUITest -destination "generic/platform=iOS Simulator"
+    
+          - name: Run package tests
+            #run: swift test -c release
+            run: xcodebuild test -scheme GXUITest -destination "platform=iOS Simulator,name=iPhone 14,OS=latest"
+
+          - name: Run integration tests
+            run: xcodebuild test -scheme UITestingSampleApp -destination "platform=iOS Simulator,name=iPhone 14,OS=latest" 
