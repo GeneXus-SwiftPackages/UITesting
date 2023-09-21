@@ -33,4 +33,15 @@ public class GXUITestUnitTests : XCTestCase {
 			XCTAssertTrue(comparisonResult)
 		}
 	}
+	
+	public func test_CompletelyDifferentImages() throws {
+		let expectedImage = try XCTUnwrap(UIImage(named: "expectedImage_3", in: Bundle.module, compatibleWith: nil))
+		let expectedCIImage = CIImage(cgImage: expectedImage.cgImage!)
+		
+		let comparisonImage = try XCTUnwrap(UIImage(named: "comparisonImage_3", in: Bundle.module, compatibleWith: nil))
+		
+		let comparisonResult = try comparisonImage.perceptuallyCompare(to: expectedCIImage)
+		
+		XCTAssertFalse(comparisonResult)
+	}
 }
