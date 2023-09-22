@@ -27,22 +27,43 @@ jobs:
           group: build-${{ github.ref }}
           cancel-in-progress: true
 
+        env:
+          XCODE_VERSION_PATH: /Applications/Xcode_14.3.1.app
+          INTEGRATION_TESTS_RESULTS_PATH: /tmp/UITestingSampleApp.xcresult
+
         steps:
           - name: Checkout
-            uses: actions/checkout@v3
+            uses: actions/checkout@v4
 
           - name: Setup Xcode version
             # See available versions & paths: https://github.com/actions/runner-images/blob/main/images/macos/macos-13-Readme.md#xcode
-            run: sudo xcode-select -s /Applications/Xcode_14.3.app
+            run: sudo xcode-select -s ${{ env.XCODE_VERSION_PATH }}
     
           - name: Build Package
-            #run: swift build -c release
             run: xcodebuild build -scheme GXUITest -destination "generic/platform=iOS Simulator"
     
           - name: Run package tests
-            #run: swift test -c release
             run: xcodebuild test -scheme GXUITest -destination "platform=iOS Simulator,name=iPhone 14,OS=latest"
 
+          - name: Grant permission to Xcode's accessibility helper
+            # Required to run UI Tests. Fields in access table depend on macOS Version (last tested on macOS Ventura) 
+            run: sudo sqlite3 "/Library/Application Support/com.apple.TCC/TCC.db" "INSERT OR REPLACE INTO access (service, client, client_type, auth_value, auth_reason, auth_version, csreq, policy_id, indirect_object_identifier_type, indirect_object_identifier, indirect_object_code_identity, flags, last_modified) VALUES ('kTCCServiceAccessibility','com.apple.dt.Xcode-Helper',0,2,3,1,NULL,NULL,0,'UNUSED',NULL,0,1);"
+
+          - name: Setup UI automation security preferences
+            # Required to avoid xcodebuild hanging waiting for TouchID/password when running UI tests
+            run: sudo automationmodetool enable-automationmode-without-authentication
+            
           - name: Run integration tests
             working-directory: Tests/IntegrationTests/UITestingSampleApp
-            run: xcodebuild test -scheme UITestingSampleApp -destination "platform=iOS Simulator,name=iPhone 14,OS=latest" 
+            run: xcodebuild test -scheme UITestingSampleApp -destination "platform=iOS Simulator,name=iPhone 14,OS=latest" -resultBundlePath "${{ env.INTEGRATION_TESTS_RESULTS_PATH }}"
+
+          - name: Zip integration tests results
+            if: ${{ failure() }}
+            run: ditto -c -k --sequesterRsrc --keepParent "${{ env.INTEGRATION_TESTS_RESULTS_PATH }}" "${{ env.INTEGRATION_TESTS_RESULTS_PATH }}.zip"
+
+          - name: Upload integration tests results
+            if: ${{ failure() }}
+            uses: actions/upload-artifact@v3
+            with:
+              name: integration-tests-results
+              path: ${{ env.INTEGRATION_TESTS_RESULTS_PATH }}
