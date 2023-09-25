@@ -11,12 +11,14 @@ let package = Package(
 	],
 	dependencies: [
 		.package(url: "https://github.com/GeneXus-SwiftPackages/GXStandardClasses.git", .upToNextMajor(from: "1.1.0-beta")),
-		.package(url: "https://github.com/AliSoftware/OHHTTPStubs.git", from: "9.1.0")
+		.package(url: "https://github.com/AliSoftware/OHHTTPStubs.git", from: "9.1.0"),
+        .package(url: "https://github.com/jechague/GXXcodeTools.git", branch: "main")
 	],
 	targets: [
 		.target(name: "GXUITest",
 				dependencies: [
 					.product(name: "GXStandardClasses", package: "GXStandardClasses"),
+					.product(name: "RunGXTests", package: "GXXcodeTools")
 				]
 		),
 
