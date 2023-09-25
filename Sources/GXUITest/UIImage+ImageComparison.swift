@@ -49,7 +49,8 @@ extension UIImage {
 
 private extension UIImage {
 	func perceptuallyCompare(toFiduciary fiduciary: CIImage, pixelPrecision: Double = PIXEL_THRESHOLD, perceptualPrecision: Double = DELTA_E_THRESHOLD) throws -> Bool {
-		let rawDeltaE = try self.cie94(fiduciary: fiduciary)
+		guard let rawDeltaE = try self.cie94(fiduciary: fiduciary) else { return false }
+		
 		let thresholdedDeltaE = try rawDeltaE.thresholdedImage(threshold: perceptualPrecision)
 		
 		let context = CIContext(options: [.workingColorSpace: NSNull(), .outputColorSpace: NSNull()])
@@ -65,8 +66,11 @@ private extension UIImage {
 		return actualPerceptualPrecision >= perceptualPrecision
 	}
 	
-	func cie94(fiduciary: CIImage) throws -> CIImage {
+	func cie94(fiduciary: CIImage) throws -> CIImage? {
 		let ciImage = try self.nonOptionalCIImage()
+		
+		// DeltaE comparison should only de done on images with the same extent (size)
+		guard ciImage.extent == fiduciary.extent else { return nil }
 		
 		// CILabDeltaE uses CIE94
 		return ciImage.applyingFilter("CILabDeltaE", parameters: ["inputImage2": fiduciary])
