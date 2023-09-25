@@ -10,7 +10,7 @@ let package = Package(
 			targets: ["GXUITest"])
 	],
 	dependencies: [
-		.package(url: "https://github.com/GeneXus-SwiftPackages/GXStandardClasses.git", .upToNextMajor(from: "1.1.0"))
+		.package(url: "https://github.com/GeneXus-SwiftPackages/GXStandardClasses.git", .upToNextMajor(from: "1.1.0-beta"))
 	],
 	targets: [
 		.target(name: "GXUITest",
