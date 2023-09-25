@@ -1,0 +1,28 @@
+{
+  "configurations" : [
+    {
+      "id" : "401F4F29-F4E3-4EE4-9E47-64F62214E40D",
+      "name" : "Configuration 1",
+      "options" : {
+
+      }
+    }
+  ],
+  "defaultOptions" : {
+    "mainThreadCheckerEnabled" : false,
+    "preferredScreenCaptureFormat" : "screenshot",
+    "testExecutionOrdering" : "random",
+    "testTimeoutsEnabled" : true
+  },
+  "testTargets" : [
+    {
+      "parallelizable" : true,
+      "target" : {
+        "containerPath" : "container:UITestingSampleApp.xcodeproj",
+        "identifier" : "2B1C159B2A8A8A2900015A71",
+        "name" : "UITestingSampleAppUITests"
+      }
+    }
+  ],
+  "version" : 1
+}

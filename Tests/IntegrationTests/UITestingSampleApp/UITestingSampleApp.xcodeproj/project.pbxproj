@@ -35,6 +35,7 @@
 		2B1C159C2A8A8A2900015A71 /* UITestingSampleAppUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = UITestingSampleAppUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		2B1C15A22A8A8A2900015A71 /* UITestingSampleAppUITestsLaunchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UITestingSampleAppUITestsLaunchTests.swift; sourceTree = "<group>"; };
 		2B1C15AF2A8A8A8300015A71 /* UITesting */ = {isa = PBXFileReference; lastKnownFileType = wrapper; name = UITesting; path = ../../..; sourceTree = "<group>"; };
+		2B4ACCF42AC11306003FA184 /* UITestingSampleApp.xctestplan */ = {isa = PBXFileReference; lastKnownFileType = file; path = UITestingSampleApp.xctestplan; sourceTree = SOURCE_ROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -100,6 +101,7 @@
 			isa = PBXGroup;
 			children = (
 				2B1C15A22A8A8A2900015A71 /* UITestingSampleAppUITestsLaunchTests.swift */,
+				2B4ACCF42AC11306003FA184 /* UITestingSampleApp.xctestplan */,
 			);
 			path = UITestingSampleAppUITests;
 			sourceTree = "<group>";
@@ -437,7 +439,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.genexus.UITestingSampleAppUITests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = auto;
-				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator macosx";
+				SUPPORTED_PLATFORMS = "iphonesimulator iphoneos";
 				SWIFT_EMIT_LOC_STRINGS = NO;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -458,7 +460,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.genexus.UITestingSampleAppUITests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = auto;
-				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator macosx";
+				SUPPORTED_PLATFORMS = "iphonesimulator iphoneos";
 				SWIFT_EMIT_LOC_STRINGS = NO;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
