@@ -175,7 +175,9 @@ internal enum AppleDeviceModel : String {
 		case iPadWithoutTouchID
 		
 		func safeAreaInsets(for orientation: UIDeviceOrientation) -> UIEdgeInsets {
-			guard orientation.isValidInterfaceOrientation else { fatalError("Unkown orientation not supported") }
+			#if DEBUG
+				guard orientation.isValidInterfaceOrientation else { fatalError("Unknown orientation not supported") }
+			#endif
 			
 			switch self {
 			case .originaliPhoneDesign, .originaliPadDesign:
@@ -218,6 +220,21 @@ internal enum AppleDeviceModel : String {
 	}
 	
 	func safeAreaInsets(for orientation: UIDeviceOrientation) -> UIEdgeInsets {
-		self.safeAreaInsetsCategory.safeAreaInsets(for: orientation)
+		var orientation = orientation
+		if orientation == .unknown || orientation.isFlat {
+			if #available(iOS 13.0, *) {
+#if DEBUG
+				assert(!UIApplication.shared.supportsMultipleScenes, "Code assumes that multiple scenes ARE NOT supported.")
+#endif
+				
+				if let scene = UIApplication.shared.connectedScenes.first as? UIWindowScene {
+					orientation = scene.interfaceOrientation.toUIDeviceOrientation()
+				}
+			} else { // iOS < 13.0
+				orientation = UIApplication.shared.statusBarOrientation.toUIDeviceOrientation()
+			}
+		}
+		
+		return self.safeAreaInsetsCategory.safeAreaInsets(for: orientation)
 	}
 }

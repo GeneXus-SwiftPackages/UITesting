@@ -18,3 +18,23 @@ internal extension CGSize {
 		CGSize.init(width: self.width * scale, height: self.height * scale)
 	}
 }
+
+internal extension UIInterfaceOrientation {
+	func toUIDeviceOrientation() -> UIDeviceOrientation {
+		switch self {
+		case .portrait:
+			return .portrait
+		case .portraitUpsideDown:
+			return .portraitUpsideDown
+		case .landscapeLeft:
+			return .landscapeLeft
+		case .landscapeRight:
+			return .landscapeRight
+		default:
+			#if DEBUG
+			assertionFailure("Unknowen device orientation: \(self)")
+			#endif
+			return .unknown
+		}
+	}
+}
