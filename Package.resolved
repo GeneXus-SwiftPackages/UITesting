@@ -1,12 +1,20 @@
 {
   "pins" : [
     {
+      "identity" : "collectionconcurrencykit",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/happn-app/CollectionConcurrencyKit.git",
+      "state" : {
+        "revision" : "b2b4dc4b363cf4301586f75d24b9ffe17111a286"
+      }
+    },
+    {
       "identity" : "gxdatalayer",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/GeneXus-SwiftPackages/GXDataLayer.git",
       "state" : {
-        "revision" : "fa1bbb0f0d5c3a3d465125debdd2e86bf62d13c4",
-        "version" : "1.1.0"
+        "revision" : "16d6a3f0ead461eeaebec00d6d84cc73737d9c34",
+        "version" : "1.1.3"
       }
     },
     {
@@ -14,8 +22,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/GeneXus-SwiftPackages/GXFoundation.git",
       "state" : {
-        "revision" : "bc2fe741da9bb14119a44ad79ecc9e59ba3d0a6b",
-        "version" : "1.1.0"
+        "revision" : "91a0e69622e973237a9366dedec77882ab40cec4",
+        "version" : "1.1.3"
       }
     },
     {
@@ -23,8 +31,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/GeneXus-SwiftPackages/GXObjectsModel.git",
       "state" : {
-        "revision" : "7dceda23687951f97ef09604085d7e5bc1dd1f4d",
-        "version" : "1.1.0"
+        "revision" : "d7b4de3fd7de1b6c133db29f377d23433c7b40ae",
+        "version" : "1.1.3"
       }
     },
     {
@@ -32,8 +40,53 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/GeneXus-SwiftPackages/GXStandardClasses.git",
       "state" : {
-        "revision" : "29ac2159e25ad6b45760c217d01601ae8522815a",
-        "version" : "1.1.0"
+        "revision" : "e16e6f7f8ace5d4d4ff55f209103f0b0fb28286d",
+        "version" : "1.1.3"
+      }
+    },
+    {
+      "identity" : "gxxcodetools",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/jechague/GXXcodeTools.git",
+      "state" : {
+        "branch" : "main",
+        "revision" : "fd77a2953bf4506301ad303bb05e15a1c3c8e286"
+      }
+    },
+    {
+      "identity" : "swift-argument-parser",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/apple/swift-argument-parser",
+      "state" : {
+        "revision" : "8f4d2753f0e4778c76d5f05ad16c74f707390531",
+        "version" : "1.2.3"
+      }
+    },
+    {
+      "identity" : "swift-system",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/apple/swift-system.git",
+      "state" : {
+        "revision" : "836bc4557b74fe6d2660218d56e3ce96aff76574",
+        "version" : "1.1.1"
+      }
+    },
+    {
+      "identity" : "swift-tools-support-core",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/apple/swift-tools-support-core.git",
+      "state" : {
+        "revision" : "0b77e67c484e532444ceeab60119b8536f8cd648",
+        "version" : "0.3.0"
+      }
+    },
+    {
+      "identity" : "xcparse",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/ChargePoint/xcparse.git",
+      "state" : {
+        "revision" : "5ec59315a5d752e560ab09080a4821244c279038",
+        "version" : "2.3.1"
       }
     },
     {
@@ -50,8 +103,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/GeneXus-SwiftPackages/YAJL.git",
       "state" : {
-        "revision" : "65d223bac5586c86d2783026018ddaa99c6bf410",
-        "version" : "1.1.0"
+        "revision" : "042c32613b24f3278d45d802b773e109140c0193",
+        "version" : "1.1.3"
       }
     }
   ],
