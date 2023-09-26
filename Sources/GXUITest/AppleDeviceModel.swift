@@ -176,7 +176,7 @@ internal enum AppleDeviceModel : String {
 		
 		func safeAreaInsets(for orientation: UIDeviceOrientation) -> UIEdgeInsets {
 			#if DEBUG
-				guard orientation.isValidInterfaceOrientation else { fatalError("Unkown orientation not supported") }
+				guard orientation.isValidInterfaceOrientation else { fatalError("Unknown orientation not supported") }
 			#endif
 			
 			switch self {
