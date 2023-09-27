@@ -837,12 +837,16 @@ public class SdtUITestSD {
 		if received == expected {
 			return true
 		}
-		else {
+		else if !received.hasPrefix(" AM") || !received.hasPrefix(" PM"){
+			var expectedSpace = received.replacingOccurrences(of: "AM", with: " AM")
+			expectedSpace = received.replacingOccurrences(of: "PM", with: " PM")
+			return received == expectedSpace
+		}
+		else if received.hasPrefix("\n"){
 			let expectedNoNewlines = expected.replacingOccurrences(of: "\n", with: " ")
 			return received == expectedNoNewlines
 		}
 	}
-}
 
 // MARK: - Internal variables and functions
 
