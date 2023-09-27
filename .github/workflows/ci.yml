@@ -1,4 +1,4 @@
-name: Build & Test
+name: Build & Unit Tests
 
 on: 
   workflow_dispatch:
@@ -30,7 +30,6 @@ jobs:
         env:
           XCODE_VERSION_PATH: /Applications/Xcode_14.3.1.app
           TEST_DESTINATION: platform=iOS Simulator,name=iPhone 14,OS=latest
-          INTEGRATION_TESTS_RESULTS_PATH: /tmp/UITestingSampleApp.xcresult
 
         steps:
           - name: Checkout
@@ -45,19 +44,3 @@ jobs:
     
           - name: Run package tests
             run: xcrun xcodebuild test -scheme GXUITest -destination "${{ env.TEST_DESTINATION }}" -quiet
-
-          # Disable integration tests since they cannot run on GitHub Actions (apprarantly, VMs don't have enought resources and the simulator times out)
-          # - name: Run integration tests
-          #   working-directory: Tests/IntegrationTests/UITestingSampleApp
-          #   run: xcrun xcodebuild -scheme UITestingSampleApp clean test -testPlan UITestingSampleApp -destination "${{ env.TEST_DESTINATION }}" -resultBundlePath "${{ env.INTEGRATION_TESTS_RESULTS_PATH }}" -quiet
-
-          # - name: Zip integration tests results
-          #   if: ${{ failure() }}
-          #   run: ditto -c -k --sequesterRsrc --keepParent "${{ env.INTEGRATION_TESTS_RESULTS_PATH }}" "${{ env.INTEGRATION_TESTS_RESULTS_PATH }}.zip"
-
-          # - name: Upload integration tests results
-          #   if: ${{ failure() }}
-          #   uses: actions/upload-artifact@v3
-          #   with:
-          #     name: integration-tests-results.zip
-          #     path: ${{ env.INTEGRATION_TESTS_RESULTS_PATH }}

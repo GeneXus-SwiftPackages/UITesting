@@ -1,0 +1,55 @@
+name: Integration Tests
+
+on: 
+  workflow_dispatch:
+  push:
+    branches: 
+      - 'main'
+      - 'develop'
+
+jobs:
+    integration-tests:
+        strategy:
+            matrix:
+              xcode-version: ["14.3.1", "15.0"]
+              device: [iPhone 14, iPhone 15 Pro]
+              exclude:
+                - xcode-version: "14.3.1"
+                  device: iPhone 15 Pro
+        
+        runs-on: [macos-13-xl]
+    
+        defaults:
+          run:
+            shell: zsh {0}
+
+        concurrency: 
+          group: integration-tests-${{ github.ref }}-${{ matrix.xcode-version }}-${{ matrix.device }}
+          cancel-in-progress: true
+
+        env:
+          XCODE_VERSION_PATH: /Applications/Xcode_${{ matrix.xcode-version }}.app
+          TEST_DESTINATION: platform=iOS Simulator,name=${{ matrix.device }},OS=latest
+          INTEGRATION_TESTS_RESULTS_PATH: /tmp/UITestingSampleApp.xcresult
+
+        steps:
+            - name: Checkout
+              uses: actions/checkout@v4
+  
+            - name: Setup Xcode version
+              run: sudo xcode-select -s ${{ env.XCODE_VERSION_PATH }}
+
+            - name: Run integration tests
+              working-directory: Tests/IntegrationTests/UITestingSampleApp
+              run: xcrun xcodebuild -quiet -scheme UITestingSampleApp clean test -testPlan UITestingSampleApp -destination "${{ env.TEST_DESTINATION }}" -resultBundlePath "${{ env.INTEGRATION_TESTS_RESULTS_PATH }}"
+
+            - name: Zip integration tests results
+              if: ${{ failure() }}
+              run: ditto -c -k --sequesterRsrc --keepParent "${{ env.INTEGRATION_TESTS_RESULTS_PATH }}" "${{ env.INTEGRATION_TESTS_RESULTS_PATH }}.zip"
+
+            - name: Upload integration tests results
+              if: ${{ failure() }}
+              uses: actions/upload-artifact@v3
+              with:
+                name: integration-tests-results-${{ matrix.xcode-version }}-${{ matrix.device }}.xcresult
+                path: ${{ env.INTEGRATION_TESTS_RESULTS_PATH }}
