@@ -71,11 +71,10 @@ private extension UIDeviceOrientation {
 		case .unknown:
 			fallthrough
 		@unknown default:
-#if DEBUG
+#if DEBUG && !canImport(XCTest)
 			preconditionFailure("Unknown UIDeviceOrientation value: \(self.rawValue)")
-#else
-			return "Unknown orientation"
 #endif
+			return "Unknown orientation"
 		}
 	}
 }
