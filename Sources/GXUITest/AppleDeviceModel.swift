@@ -43,6 +43,10 @@ internal enum AppleDeviceModel : String {
 	case iPhone14Plus	= "iPhone 14 Plus"
 	case iPhone14Pro	= "iPhone 14 Pro"
 	case iPhone14ProMax	= "iPhone 14 Pro Max"
+	case iPhone15		= "iPhone 15"
+	case iPhone15Plus	= "iPhone 15 Plus"
+	case iPhone15Pro	= "iPhone 15 Pro"
+	case iPhone15ProMax	= "iPhone 15 Pro Max"
 	case iPad5thGeneration = "iPad (5th generation)"
 	case iPad6thGeneration = "iPad (6th generation)"
 	case iPad7thGeneration = "iPad (7th generation)"
@@ -121,6 +125,10 @@ internal enum AppleDeviceModel : String {
 			case "iPhone14,8":                                    return "iPhone 14 Plus"
 			case "iPhone15,2":                                    return "iPhone 14 Pro"
 			case "iPhone15,3":                                    return "iPhone 14 Pro Max"
+			case "iPhone15,4":                                    return "iPhone 15"
+			case "iPhone15,5":                                    return "iPhone 15 Plus"
+			case "iPhone16,1":                                    return "iPhone 15 Pro"
+			case "iPhone16,2":                                    return "iPhone 15 Pro Max"
 			case "iPhone8,4":                                     return "iPhone SE"
 			case "iPhone12,8":                                    return "iPhone SE (2nd generation)"
 			case "iPhone14,6":                                    return "iPhone SE (3rd generation)"
@@ -206,11 +214,11 @@ internal enum AppleDeviceModel : String {
 			return .iPhoneXLike
 		case .iPhoneXR, .iPhone11:
 			return .iPhone11Like
-		case .iPhone12, .iPhone12Pro, .iPhone12ProMax, .iPhone13, .iPhone13Pro, .iPhone13ProMax, .iPhone14, .iPhone14Plus:
+		case .iPhone12, .iPhone12Pro, .iPhone12ProMax, .iPhone13, .iPhone13Pro, .iPhone13ProMax, .iPhone14, .iPhone14Plus, .iPhone15, .iPhone15Plus:
 			return .iPhone12Like
 		case .iPhone12Mini, .iPhone13Mini:
 			return .iPhone12MiniLike
-		case .iPhone14Pro, .iPhone14ProMax:
+		case .iPhone14Pro, .iPhone14ProMax, .iPhone15Pro, .iPhone15ProMax:
 			return .iPhone14ProLike
 		case .iPad5thGeneration, .iPad6thGeneration, .iPad7thGeneration, .iPad8thGeneration, .iPad9thGeneration, .iPadAir, .iPadAir2, .iPadAir3rdGeneration, .iPadAir4thGeneration, .iPadAir5thGeneration, .iPadMini2, .iPadMini3, .iPadMini4, .iPadMini5thGeneration, .iPadPro9_7, .iPadPro10_5, .iPadPro12_91stGeneration, .iPadPro12_92ndGeneration:
 			return .originaliPadDesign
@@ -220,21 +228,6 @@ internal enum AppleDeviceModel : String {
 	}
 	
 	func safeAreaInsets(for orientation: UIDeviceOrientation) -> UIEdgeInsets {
-		var orientation = orientation
-		if orientation == .unknown || orientation.isFlat {
-			if #available(iOS 13.0, *) {
-#if DEBUG
-				assert(!UIApplication.shared.supportsMultipleScenes, "Code assumes that multiple scenes ARE NOT supported.")
-#endif
-				
-				if let scene = UIApplication.shared.connectedScenes.first as? UIWindowScene {
-					orientation = scene.interfaceOrientation.toUIDeviceOrientation()
-				}
-			} else { // iOS < 13.0
-				orientation = UIApplication.shared.statusBarOrientation.toUIDeviceOrientation()
-			}
-		}
-		
-		return self.safeAreaInsetsCategory.safeAreaInsets(for: orientation)
+		self.safeAreaInsetsCategory.safeAreaInsets(for: orientation)
 	}
 }

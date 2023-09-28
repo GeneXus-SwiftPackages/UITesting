@@ -15,7 +15,24 @@ internal struct GXUITestingHelpers {
 		case safeArea
 	}
 	
-	static var currentDeviceOrientation: UIDeviceOrientation { XCUIDevice.shared.orientation }
+	static var currentDeviceOrientation: UIDeviceOrientation {
+		var orientation = XCUIDevice.shared.orientation
+		
+		if orientation == .unknown || orientation.isFlat {
+			if #available(iOS 13.0, *) {
+#if DEBUG
+				assert(!UIApplication.shared.supportsMultipleScenes, "Code assumes that multiple scenes ARE NOT supported.")
+#endif
+				if let scene = UIApplication.shared.connectedScenes.first as? UIWindowScene {
+					orientation = scene.interfaceOrientation.toUIDeviceOrientation()
+				}
+			} else { // iOS < 13.0
+				orientation = UIApplication.shared.statusBarOrientation.toUIDeviceOrientation()
+			}
+		}
+		
+		return orientation
+	}
 	
 	static func screenshotImage(from control: XCUIScreenshotProviding, clipToSafeArea: ScreenshotClippingStyle = .none) -> UIImage {
 		var screenshot = control.screenshot().image
