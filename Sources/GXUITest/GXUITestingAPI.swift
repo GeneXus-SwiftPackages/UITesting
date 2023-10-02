@@ -10,13 +10,17 @@ import GXObjectsModel
 
 // MARK: - GeneXus UI Test object
 
-public class SdtUITestSD {
+protocol VisualTestingServerProvider {
+	var visualTestingServer: String { get }
+}
+
+public class SdtUITestSD : VisualTestingServerProvider {
 	
 	public init() { }
 	
 	// MARK: Configuration variables
 	
-	public static var visualTestingServer: String = ""
+	public var visualTestingServer: String = ""
 	
 	// MARK: EO implementation
 
@@ -386,7 +390,7 @@ public class SdtUITestSD {
 				let testName = (testFile as NSString).lastPathComponent.replacingOccurrences(of: ".swift", with: "")
 				
 				do {
-					let visualTestingProvider = VisualTestingProvider(projectCode: bundleId, testName: testName, reference: reference)
+					let visualTestingProvider = VisualTestingProvider(projectCode: bundleId, testName: testName, reference: reference, serverProvider: self)
 					
 					let capturedImage = GXUITestingHelpers.screenshotImage(from: control, clipToSafeArea: controlName != nil ? .none : .safeArea)
 					if let expectedImage = try visualTestingProvider.getReferenceImage() {
@@ -877,12 +881,8 @@ fileprivate let _textInputElementTypes: Array<XCUIElement.ElementType> = [.textF
 																		  .secureTextField,
 																		  .other]
 
-fileprivate func _waitMilliseconds(_ milliseconds: Int) {
-	_waitSeconds(Double(milliseconds) / 1000.0)
-}
-fileprivate func _waitSeconds(_ seconds: TimeInterval) {
-	Thread.sleep(forTimeInterval: seconds)
-}
+internal func _waitMilliseconds(_ milliseconds: Int) { _waitSeconds(Double(milliseconds) / 1000.0) }
+fileprivate func _waitSeconds(_ seconds: TimeInterval) { Thread.sleep(forTimeInterval: seconds) }
 
 fileprivate func _applyControlNameCasing(_ name: String) -> String {
 	guard name.count > 0 else { return name }
@@ -1037,248 +1037,4 @@ fileprivate func _findElement(withName name: String?, inQuery query: XCUIElement
 		return query.matching(identifier: name)
 	}
 	return query
-}
-
-fileprivate extension XCUIElement {
-
-	private func hasText() -> Bool {
-		if let placeholder = self.placeholderValue {
-			if let value = self.value as? String {
-				return value != placeholder
-			}
-			else {
-				return false
-			}
-		}
-		else {
-			return self.value != nil
-		}
-	}
-
-	private func hasFocus() -> Bool {
-		return self.value(forKey: "hasKeyboardFocus") as? Bool ?? false
-	}
-
-	private func isKeyboardVisible() -> Bool {
-		XCUIApplication().keyboards.count > 0
-	}
-
-	func clearText() {
-		if !self.hasFocus() {
-			self.tap()
-		}
-		if self.hasText() {
-			let clearButton = self.descendants(matching: .button).matching(identifier: "Clear text")
-			if clearButton.count > 0 {
-				clearButton.element(boundBy: 0).tap()
-				self.tap()
-				return
-			}
-
-			let menuItems = XCUIApplication().descendants(matching: .menuItem)
-			let menuItemQuery = menuItems.matching(identifier: "Select All")
-
-			if !(menuItems.count > 0) {
-				self.press(forDuration: 1.5) // tap and hold to select all
-				_waitMilliseconds(500)
-			}
-			
-			if menuItemQuery.count > 0 {
-				menuItemQuery.element(boundBy: 0).tap()
-			}
-
-			if !isKeyboardVisible() {
-				self.tap()
-			}
-			self.typeText(XCUIKeyboardKey.delete.rawValue)
-		}
-	}
-}
-
-fileprivate extension CGImage {
-	var data: Data? {
-		guard let mutableData = CFDataCreateMutable(nil, 0),
-			  let destination = CGImageDestinationCreateWithData(mutableData, "public.png" as CFString, 1, nil) else { return nil }
-		CGImageDestinationAddImage(destination, self, nil)
-		guard CGImageDestinationFinalize(destination) else { return nil }
-		return mutableData as Data
-	}
-}
-
-final public class genexus_client_SdtClientInformation : GXStandardClasses.GXUserType {
-	public lazy var gxTv_SdtClientInformation_Id: String = GXClientInformation.deviceUUID(for: self) ?? ""
-
-	public lazy var gxTv_SdtClientInformation_Osname: String = GXClientInformation.osName()
-
-	public lazy var gxTv_SdtClientInformation_Osversion: String = GXClientInformation.osVersion()
-
-	public lazy var gxTv_SdtClientInformation_Language: String = GXClientInformation.deviceLanguage()
-
-	public lazy var gxTv_SdtClientInformation_Devicetype: Int = Int(GXClientInformation.deviceType())
-
-	public lazy var gxTv_SdtClientInformation_Platformname: String = GXClientInformation.platformName(for: self)
-
-	public lazy var gxTv_SdtClientInformation_Appversioncode: String = GXClientInformation.appVersionCode(for: self)
-
-	public lazy var gxTv_SdtClientInformation_Appversionname: String = GXClientInformation.appVersionName(for: self)
-
-	public lazy var gxTv_SdtClientInformation_Applicationid: String = GXClientInformation.appIdentifier(for: self)
-}
-
-fileprivate class VisualTestingProvider {
-	
-	enum VisualTestingError: Error {
-		case invalidURL
-		case failedToUploadImage
-		case couldNotSerializeParameters
-	}
-	
-	// MARK: Properties
-	
-	let projectCode: String
-	let testName: String
-	let reference: String
-	
-	var baseURLString: String {
-		let baseURL = SdtUITestSD.visualTestingServer
-		let separator = baseURL.hasSuffix("/") ? "" : "/"
-		return "\(baseURL)\(separator)"
-	}
-
-	var getResourceURL: URL? { URL(string: "\(baseURLString)GetResource") }
-
-	var setResourceURL: URL? { URL(string: "\(baseURLString)SetResource") }
-	
-	var imageUploadURL: URL? { URL(string: "\(baseURLString)SetResource/gxobject")}
-
-	// MARK: Init
-	
-	init(projectCode: String, testName: String, reference: String) {
-		self.projectCode = projectCode
-		self.testName = testName
-		self.reference = reference
-	}
-	
-	// MARK: Public API
-	
-	func getReferenceImage() throws -> UIImage? {
-		guard let requestURL = getResourceURL else {
-			throw VisualTestingError.invalidURL
-		}
-		let params: Dictionary<String, Any> = ["projectCode": projectCode, "testCode": testName, "resourceReference": reference, "platform": 1]
-		guard let paramsData = try? JSONSerialization.data(withJSONObject: params, options: []) else {
-			return nil
-		}
-		guard let postResult = awaitPost(toURL: requestURL, data: paramsData, mimeType: "application/json", resultKey: "image") else {
-			return nil
-		}
-		return getImage(from: postResult)
-	}
-	
-	func saveReferenceImage(image: UIImage) throws {
-		guard let requestURL = setResourceURL else {
-			throw VisualTestingError.invalidURL
-		}
-		
-		guard let gxuploadCode = try? uploadImage(image: image) else {
-			throw VisualTestingError.failedToUploadImage
-		}
-		
-		let params: Dictionary<String, Any> = ["projectCode": projectCode, "testCode": testName, "resourceReference": reference, "platform": 1, "image": gxuploadCode]
-		guard let paramsData = try? JSONSerialization.data(withJSONObject: params, options: []) else {
-			throw VisualTestingError.couldNotSerializeParameters
-		}
-		
-		awaitPost(toURL: requestURL, data: paramsData, mimeType: "application/json")
-	}
-	
-	func saveImageWithDifference(image: UIImage) throws {
-		// Using the same service used to save a new reference image
-		try self.saveReferenceImage(image: image)
-	}
-	
-	// MARK: Private
-	
-	private func getImage(from urlString: String) -> UIImage? {
-		guard
-			let url = URL(string: urlString),
-			let resultData = awaitGet(fromURL: url)
-		else {
-			return nil
-		}
-		return UIImage(data: resultData)
-	}
-	
-	private func uploadImage(image: UIImage) throws -> String? {
-		guard let requestURL = imageUploadURL else {
-			throw VisualTestingError.invalidURL
-		}
-		guard let pngData = image.pngData() else {
-			return nil
-		}
-		return awaitPost(toURL: requestURL, data: pngData, mimeType: "image/png", resultKey: "object_id")
-	}
-	
-	// MARK: Network
-	
-	private func awaitGet(fromURL requestURL: URL) -> Data? {
-		var result: Data? = nil
-		
-		let semaphore = DispatchSemaphore(value: 0)
-		let task = URLSession.shared.dataTask(with: requestURL) { data, response, error in
-			defer { semaphore.signal() }
-			guard let data = data,
-				  error == nil,
-				  let response = response as? HTTPURLResponse,
-				  response.statusCode >= 200,
-				  response.statusCode < 300
-			else {
-				return
-			}
-			result = data
-		}
-		task.resume()
-		semaphore.wait()
-		
-		return result
-	}
-	
-	private func postRequest(forURL requestURL: URL, data: Data, mimeType: String) -> URLRequest {
-		var request = URLRequest(url: requestURL)
-		request.httpMethod = "POST"
-		request.httpBody = data
-		request.addValue(mimeType, forHTTPHeaderField: "Content-Type")
-		return request
-	}
-	
-	private func awaitPost(toURL requestURL: URL, data: Data, mimeType: String) {
-		let request = postRequest(forURL: requestURL, data: data, mimeType: mimeType)
-		let semaphore = DispatchSemaphore(value: 0)
-		let task = URLSession.shared.dataTask(with: request, completionHandler: { data, response, error -> Void in
-			semaphore.signal()
-		})
-		task.resume()
-		semaphore.wait()
-	}
-	
-	private func awaitPost(toURL requestURL: URL, data: Data, mimeType: String, resultKey: String) -> String? {
-		var result: String? = nil
-		
-		let request = postRequest(forURL: requestURL, data: data, mimeType: mimeType)
-		let semaphore = DispatchSemaphore(value: 0)
-		let task = URLSession.shared.dataTask(with: request, completionHandler: { data, response, error -> Void in
-			defer { semaphore.signal() }
-			guard let data = data, error == nil else {
-				return
-			}
-			do {
-				let json = try JSONSerialization.jsonObject(with: data) as? Dictionary<String, AnyObject>
-				result = json?[resultKey] as? String
-			} catch { }
-		})
-		task.resume()
-		semaphore.wait()
-		
-		return result
-	}
 }

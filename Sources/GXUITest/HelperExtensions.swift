@@ -6,6 +6,74 @@
 //
 
 import Foundation
+import XCTest
+
+internal extension XCUIElement {
+
+	private func hasText() -> Bool {
+		if let placeholder = self.placeholderValue {
+			if let value = self.value as? String {
+				return value != placeholder
+			}
+			else {
+				return false
+			}
+		}
+		else {
+			return self.value != nil
+		}
+	}
+
+	private func hasFocus() -> Bool {
+		return self.value(forKey: "hasKeyboardFocus") as? Bool ?? false
+	}
+
+	private func isKeyboardVisible() -> Bool {
+		XCUIApplication().keyboards.count > 0
+	}
+
+	func clearText() {
+		if !self.hasFocus() {
+			self.tap()
+		}
+		
+		if self.hasText() {
+			let clearButton = self.descendants(matching: .button).matching(identifier: "Clear text")
+			if clearButton.count > 0 {
+				clearButton.element(boundBy: 0).tap()
+				self.tap()
+				return
+			}
+
+			let menuItems = XCUIApplication().descendants(matching: .menuItem)
+			let menuItemQuery = menuItems.matching(identifier: "Select All")
+
+			if !(menuItems.count > 0) {
+				self.press(forDuration: 1.5) // tap and hold to select all
+				_waitMilliseconds(500)
+			}
+			
+			if menuItemQuery.count > 0 {
+				menuItemQuery.element(boundBy: 0).tap()
+			}
+
+			if !isKeyboardVisible() {
+				self.tap()
+			}
+			self.typeText(XCUIKeyboardKey.delete.rawValue)
+		}
+	}
+}
+
+internal extension CGImage {
+	var data: Data? {
+		guard let mutableData = CFDataCreateMutable(nil, 0),
+			  let destination = CGImageDestinationCreateWithData(mutableData, "public.png" as CFString, 1, nil) else { return nil }
+		CGImageDestinationAddImage(destination, self, nil)
+		guard CGImageDestinationFinalize(destination) else { return nil }
+		return mutableData as Data
+	}
+}
 
 internal extension UIEdgeInsets {
 	func scaled(by scale: CGFloat) -> UIEdgeInsets {
