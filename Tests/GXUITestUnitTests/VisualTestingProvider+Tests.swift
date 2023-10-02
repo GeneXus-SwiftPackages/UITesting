@@ -11,7 +11,14 @@ import OHHTTPStubsSwift
 
 @testable import GXUITest
 
-class VisualTestingProvider_Tests_ProviderWithoutURL : XCTestCase {
+class XCTestCaseWithGXModel : XCTestCase {
+	public override func setUp() {
+		super.setUp()
+		GXTestsExecutionEnvironment.setTestExecutionEnvironmentAndGXModel()
+	}
+}
+
+class VisualTestingProvider_Tests_ProviderWithoutURL : XCTestCaseWithGXModel {
 	class EmtpyURLServerProvider : VisualTestingServerProvider {
 		var visualTestingServer: String { "" }
 	}
@@ -47,7 +54,7 @@ class VisualTestingProvider_Tests_ProviderWithoutURL : XCTestCase {
 	}
 }
 
-class VisualTestingProvider_Tests_ProviderWithURL : XCTestCase {
+class VisualTestingProvider_Tests_ProviderWithURL : XCTestCaseWithGXModel {
 	class ExampleURLServerProvider : VisualTestingServerProvider {
 		var visualTestingServer: String { "http://example.com" }
 	}
@@ -56,7 +63,7 @@ class VisualTestingProvider_Tests_ProviderWithURL : XCTestCase {
 	
 	func test_GetResource() throws {
 		stub(condition: isAbsoluteURLString("http://example.com/GetResource")) { request in
-			XCTAssertEqual(request.value(forHTTPHeaderField: "Content-Type"), "application/json")
+			self.assertCommonHeaders(in: request.allHTTPHeaderFields)
 			
 			let bodyParams: [String : Any]
 			switch TestHelpers.readObjectFromBody(of: request) {
@@ -67,10 +74,7 @@ class VisualTestingProvider_Tests_ProviderWithURL : XCTestCase {
 				return errorResponse
 			}
 			
-			XCTAssertNotNil(bodyParams["projectCode"])
-			XCTAssertNotNil(bodyParams["resourceReference"])
-			XCTAssertNotNil(bodyParams["testCode"])
-			XCTAssertEqual(bodyParams["platform"] as? Int, VisualTestingProvider.Platform.iOS.rawValue)
+			self.assertCommonParameters(in: bodyParams)
 			
 			let responseBody = ["image": "http://example.com/image.png"]
 			guard let responseData = try? JSONSerialization.data(withJSONObject: responseBody, options: []) else {
@@ -107,7 +111,7 @@ class VisualTestingProvider_Tests_ProviderWithURL : XCTestCase {
 		let uploadedObjectID = UUID().uuidString
 		
 		stub(condition: isAbsoluteURLString("http://example.com/SetResource/gxobject")) { request in
-			XCTAssertEqual(request.value(forHTTPHeaderField: "Content-Type"), "image/png")
+			self.assertCommonHeaders(in: request.allHTTPHeaderFields, contentType: "image/png")
 			
 			let body: Data
 			switch TestHelpers.readBody(from: request) {
@@ -129,7 +133,7 @@ class VisualTestingProvider_Tests_ProviderWithURL : XCTestCase {
 		}
 		
 		stub(condition: isAbsoluteURLString("http://example.com/SetResource")) { request in
-			XCTAssertEqual(request.value(forHTTPHeaderField: "Content-Type"), "application/json")
+			self.assertCommonHeaders(in: request.allHTTPHeaderFields)
 			
 			let bodyParams: [String : Any]
 			switch TestHelpers.readObjectFromBody(of: request) {
@@ -140,11 +144,7 @@ class VisualTestingProvider_Tests_ProviderWithURL : XCTestCase {
 				return errorResponse
 			}
 			
-			// Common headers
-			XCTAssertNotNil(bodyParams["projectCode"])
-			XCTAssertNotNil(bodyParams["resourceReference"])
-			XCTAssertNotNil(bodyParams["testCode"])
-			XCTAssertEqual(bodyParams["platform"] as? Int, VisualTestingProvider.Platform.iOS.rawValue)
+			self.assertCommonParameters(in: bodyParams)
 			
 			// Object ID of uploaded blob
 			XCTAssertEqual(bodyParams["image"] as? String, uploadedObjectID)
@@ -153,6 +153,30 @@ class VisualTestingProvider_Tests_ProviderWithURL : XCTestCase {
 		}
 		
 		XCTAssertNoThrow(try provider.saveReferenceImage(image: image))
+	}
+	
+	private func assertCommonParameters(in requestBody: [String : Any])  {
+		XCTAssertEqual(requestBody["projectCode"] as? String, provider.projectCode)
+		XCTAssertEqual(requestBody["resourceReference"] as? String, provider.reference)
+		XCTAssertEqual(requestBody["testCode"] as? String, provider.testName)
+		
+		XCTAssertEqual(requestBody["platform"] as? Int, VisualTestingProvider.Platform.iOS.rawValue)
+	}
+	
+	private func assertCommonHeaders(in requestHeaders: [String : String]?, contentType: String = "application/json") {
+		guard let requestHeaders else {
+			XCTFail("Request dictionary should not be nil")
+			return
+		}
+		
+		XCTAssertEqual(requestHeaders["Content-Type"], contentType)
+		
+		XCTAssertNotNil(requestHeaders["DeviceOSName"])
+		XCTAssertNotNil(requestHeaders["GeneXus-Agent"])
+		XCTAssertNotNil(requestHeaders["GxTZOffset"])
+		XCTAssertNotNil(requestHeaders["Accept-Language"])
+		XCTAssertNotNil(requestHeaders["DeviceOSVersion"])
+		XCTAssertNotNil(requestHeaders["DeviceType"])
 	}
 }
 
