@@ -11,8 +11,6 @@ import GXObjectsModel
 
 class GXTestsExecutionEnvironment : NSObject {
 	static var setTestExecutionEnvironmentOnce: Void = {
-		//let helperInternal = unsafeBitCast(GXExecutionEnvironmentHelper.self, to: GXExecutionEnvironmentHelper_GXInternal.Type.self)
-		
 		let testExecutionEnvironment = GXTestsExecutionEnvironment()
 		
 		GXExecutionEnvironmentHelper.perform(NSSelectorFromString("setCurrentExecutionEnvironment:"), with: testExecutionEnvironment)
