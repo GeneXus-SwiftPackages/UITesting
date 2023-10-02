@@ -163,6 +163,10 @@ internal class VisualTestingProvider {
 		request.httpMethod = "POST"
 		request.httpBody = data
 		
+		if let model = GXModel.current() {
+			request.setGXClientInfoHTTPHeaderFields(for: model)
+		}
+		
 		request.addValue(mimeType, forHTTPHeaderField: "Content-Type")
 		
 		return request
