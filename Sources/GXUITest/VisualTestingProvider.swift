@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import GXObjectsModel
 
 internal class VisualTestingProvider {
 	
@@ -166,6 +167,7 @@ internal class VisualTestingProvider {
 		request.setGXClientInfoHTTPHeaderFields(for: GXModelForTesting.shared)
 		
 		request.addValue(mimeType, forHTTPHeaderField: "Content-Type")
+		request.addValue(GXUtilities.deviceName(), forHTTPHeaderField: "DeviceName")
 		
 		return request
 	}

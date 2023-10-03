@@ -164,12 +164,13 @@ class VisualTestingProvider_Tests_ProviderWithURL : XCTestCase {
 		
 		XCTAssertEqual(requestHeaders["Content-Type"], contentType)
 		
-		XCTAssertNotNil(requestHeaders["DeviceOSName"])
-		XCTAssertNotNil(requestHeaders["GeneXus-Agent"])
-		XCTAssertNotNil(requestHeaders["GxTZOffset"])
 		XCTAssertNotNil(requestHeaders["Accept-Language"])
+		XCTAssertNotNil(requestHeaders["DeviceName"])
+		XCTAssertNotNil(requestHeaders["DeviceOSName"])
 		XCTAssertNotNil(requestHeaders["DeviceOSVersion"])
 		XCTAssertNotNil(requestHeaders["DeviceType"])
+		XCTAssertNotNil(requestHeaders["GeneXus-Agent"])
+		XCTAssertNotNil(requestHeaders["GxTZOffset"])
 	}
 }
 
