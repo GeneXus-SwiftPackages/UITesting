@@ -11,14 +11,7 @@ import OHHTTPStubsSwift
 
 @testable import GXUITest
 
-class XCTestCaseWithGXModel : XCTestCase {
-	public override func setUp() {
-		super.setUp()
-		GXTestsExecutionEnvironment.setTestExecutionEnvironmentAndGXModel()
-	}
-}
-
-class VisualTestingProvider_Tests_ProviderWithoutURL : XCTestCaseWithGXModel {
+class VisualTestingProvider_Tests_ProviderWithoutURL : XCTestCase {
 	class EmtpyURLServerProvider : VisualTestingServerProvider {
 		var visualTestingServer: String { "" }
 	}
@@ -54,7 +47,7 @@ class VisualTestingProvider_Tests_ProviderWithoutURL : XCTestCaseWithGXModel {
 	}
 }
 
-class VisualTestingProvider_Tests_ProviderWithURL : XCTestCaseWithGXModel {
+class VisualTestingProvider_Tests_ProviderWithURL : XCTestCase {
 	class ExampleURLServerProvider : VisualTestingServerProvider {
 		var visualTestingServer: String { "http://example.com" }
 	}
