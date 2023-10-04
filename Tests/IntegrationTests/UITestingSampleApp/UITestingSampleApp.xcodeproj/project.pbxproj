@@ -11,8 +11,9 @@
 		2B1C15872A8A8A2600015A71 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2B1C15862A8A8A2600015A71 /* ContentView.swift */; };
 		2B1C15892A8A8A2900015A71 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 2B1C15882A8A8A2900015A71 /* Assets.xcassets */; };
 		2B1C158D2A8A8A2900015A71 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 2B1C158C2A8A8A2900015A71 /* Preview Assets.xcassets */; };
-		2B1C15A32A8A8A2900015A71 /* UITestingSampleAppUITestsLaunchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2B1C15A22A8A8A2900015A71 /* UITestingSampleAppUITestsLaunchTests.swift */; };
+		2B1C15A32A8A8A2900015A71 /* UITestingSampleAppUITestsScreenshotClippingTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2B1C15A22A8A8A2900015A71 /* UITestingSampleAppUITestsScreenshotClippingTests.swift */; };
 		2B1C15B22A8A8B1100015A71 /* GXUITest in Frameworks */ = {isa = PBXBuildFile; productRef = 2B1C15B12A8A8B1100015A71 /* GXUITest */; };
+		2BA961122ACDA45C001A1EF5 /* UITestingSampleAppUITestsGeneratedIntegrationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2BA961112ACDA45C001A1EF5 /* UITestingSampleAppUITestsGeneratedIntegrationTests.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -33,9 +34,10 @@
 		2B1C158A2A8A8A2900015A71 /* UITestingSampleApp.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = UITestingSampleApp.entitlements; sourceTree = "<group>"; };
 		2B1C158C2A8A8A2900015A71 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		2B1C159C2A8A8A2900015A71 /* UITestingSampleAppUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = UITestingSampleAppUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		2B1C15A22A8A8A2900015A71 /* UITestingSampleAppUITestsLaunchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UITestingSampleAppUITestsLaunchTests.swift; sourceTree = "<group>"; };
+		2B1C15A22A8A8A2900015A71 /* UITestingSampleAppUITestsScreenshotClippingTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UITestingSampleAppUITestsScreenshotClippingTests.swift; sourceTree = "<group>"; };
 		2B1C15AF2A8A8A8300015A71 /* UITesting */ = {isa = PBXFileReference; lastKnownFileType = wrapper; name = UITesting; path = ../../..; sourceTree = "<group>"; };
-		2B4ACCF42AC11306003FA184 /* UITestingSampleApp.xctestplan */ = {isa = PBXFileReference; lastKnownFileType = file; path = UITestingSampleApp.xctestplan; sourceTree = SOURCE_ROOT; };
+		2B4ACCF42AC11306003FA184 /* UITestingSampleApp.xctestplan */ = {isa = PBXFileReference; lastKnownFileType = text; path = UITestingSampleApp.xctestplan; sourceTree = SOURCE_ROOT; };
+		2BA961112ACDA45C001A1EF5 /* UITestingSampleAppUITestsGeneratedIntegrationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UITestingSampleAppUITestsGeneratedIntegrationTests.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -100,8 +102,9 @@
 		2B1C159F2A8A8A2900015A71 /* UITestingSampleAppUITests */ = {
 			isa = PBXGroup;
 			children = (
-				2B1C15A22A8A8A2900015A71 /* UITestingSampleAppUITestsLaunchTests.swift */,
+				2B1C15A22A8A8A2900015A71 /* UITestingSampleAppUITestsScreenshotClippingTests.swift */,
 				2B4ACCF42AC11306003FA184 /* UITestingSampleApp.xctestplan */,
+				2BA961112ACDA45C001A1EF5 /* UITestingSampleAppUITestsGeneratedIntegrationTests.swift */,
 			);
 			path = UITestingSampleAppUITests;
 			sourceTree = "<group>";
@@ -225,7 +228,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				2B1C15A32A8A8A2900015A71 /* UITestingSampleAppUITestsLaunchTests.swift in Sources */,
+				2B1C15A32A8A8A2900015A71 /* UITestingSampleAppUITestsScreenshotClippingTests.swift in Sources */,
+				2BA961122ACDA45C001A1EF5 /* UITestingSampleAppUITestsGeneratedIntegrationTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -11,7 +11,7 @@ import GXObjectsModel
 // MARK: - GeneXus UI Test object
 
 protocol VisualTestingServerProvider {
-	var visualTestingServer: String { get }
+	static var visualTestingServer: String { get }
 }
 
 public class SdtUITestSD : VisualTestingServerProvider {
@@ -20,7 +20,7 @@ public class SdtUITestSD : VisualTestingServerProvider {
 	
 	// MARK: Configuration variables
 	
-	public var visualTestingServer: String = ""
+	public static var visualTestingServer: String = ""
 	
 	// MARK: EO implementation
 

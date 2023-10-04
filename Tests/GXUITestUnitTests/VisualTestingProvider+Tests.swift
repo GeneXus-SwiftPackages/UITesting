@@ -13,7 +13,7 @@ import OHHTTPStubsSwift
 
 class VisualTestingProvider_Tests_ProviderWithoutURL : XCTestCase {
 	class EmtpyURLServerProvider : VisualTestingServerProvider {
-		var visualTestingServer: String { "" }
+		static var visualTestingServer: String { "" }
 	}
 	
 	let provider = VisualTestingProvider(projectCode: "ABC", testName: "Test123", reference: "Resouce reference", serverProvider: EmtpyURLServerProvider())
@@ -49,7 +49,7 @@ class VisualTestingProvider_Tests_ProviderWithoutURL : XCTestCase {
 
 class VisualTestingProvider_Tests_ProviderWithURL : XCTestCase {
 	class ExampleURLServerProvider : VisualTestingServerProvider {
-		var visualTestingServer: String { "http://example.com" }
+		static var visualTestingServer: String { "http://example.com" }
 	}
 	
 	let provider =  VisualTestingProvider(projectCode: "ABC", testName: "Test123", reference: "Resouce reference", serverProvider: ExampleURLServerProvider())

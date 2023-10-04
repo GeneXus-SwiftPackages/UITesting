@@ -15,7 +15,7 @@ private func GXAssertEqualSizes(_ size1: CGSize, _ size2: CGSize, _ message: @au
 	}
 }
 
-final class UITestingSampleAppUITestsLaunchTests: XCTestCase {
+final class UITestingSampleAppUITestsScreenshotClippingTests: XCTestCase {
 
 	/// App target MUST with configured as supporting all four device orientations so that tests are complete
     override class var runsForEachTargetApplicationUIConfiguration: Bool { true }

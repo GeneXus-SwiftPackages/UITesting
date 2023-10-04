@@ -30,7 +30,7 @@ internal class VisualTestingProvider {
 	private let serverProvider: VisualTestingServerProvider
 	
 	var baseURLString: String? {
-		let baseURL = serverProvider.visualTestingServer
+		let baseURL = type(of: serverProvider).visualTestingServer
 		
 		guard !baseURL.isEmpty else { return nil }
 		
