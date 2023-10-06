@@ -50,7 +50,16 @@
       "location" : "https://github.com/jechague/GXXcodeTools.git",
       "state" : {
         "branch" : "main",
-        "revision" : "fd77a2953bf4506301ad303bb05e15a1c3c8e286"
+        "revision" : "da21f4b9128af2b68664000ac6db5af8c63e1cfc"
+      }
+    },
+    {
+      "identity" : "ohhttpstubs",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/AliSoftware/OHHTTPStubs.git",
+      "state" : {
+        "revision" : "12f19662426d0434d6c330c6974d53e2eb10ecd9",
+        "version" : "9.1.0"
       }
     },
     {
@@ -87,15 +96,6 @@
       "state" : {
         "revision" : "5ec59315a5d752e560ab09080a4821244c279038",
         "version" : "2.3.1"
-      }
-    },
-    {
-      "identity" : "ohhttpstubs",
-      "kind" : "remoteSourceControl",
-      "location" : "https://github.com/AliSoftware/OHHTTPStubs.git",
-      "state" : {
-        "revision" : "12f19662426d0434d6c330c6974d53e2eb10ecd9",
-        "version" : "9.1.0"
       }
     },
     {
