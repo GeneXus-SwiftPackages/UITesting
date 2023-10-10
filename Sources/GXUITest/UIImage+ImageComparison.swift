@@ -51,19 +51,20 @@ private extension UIImage {
 	func perceptuallyCompare(toFiduciary fiduciary: CIImage, pixelPrecision: Double = PIXEL_THRESHOLD, perceptualPrecision: Double = DELTA_E_THRESHOLD) throws -> Bool {
 		guard let rawDeltaE = try self.cie94(fiduciary: fiduciary) else { return false }
 		
-		let thresholdedDeltaE = try rawDeltaE.thresholdedImage(threshold: perceptualPrecision)
+		let thresholdedDeltaE = try rawDeltaE.thresholdedImage(threshold: Float(perceptualPrecision))
 		
 		let context = CIContext(options: [.workingColorSpace: NSNull(), .outputColorSpace: NSNull()])
 		
 		let averagePixel = thresholdedDeltaE.averagePixelValue(withContext: context)
 		let actualPixelPrecision = 1 - averagePixel
 		
-		guard actualPixelPrecision < pixelPrecision else { return true }
+		guard actualPixelPrecision < pixelPrecision || actualPixelPrecision == 1.0 && !averagePixel.isZero else { return true }
 		
 		let maximumDeltaE = rawDeltaE.maximumPixelValue(withContext: context)
 		let actualPerceptualPrecision = 1 - maximumDeltaE / 100
 		
-		return actualPerceptualPrecision >= perceptualPrecision
+		return actualPerceptualPrecision >= perceptualPrecision && 
+			(actualPerceptualPrecision != 1 || averagePixel.isZero || perceptualPrecision != 1) // Account for rounding errors
 	}
 	
 	func cie94(fiduciary: CIImage) throws -> CIImage? {
@@ -86,13 +87,13 @@ private extension UIImage {
 }
 
 private extension CIImage {
-	func thresholdedImage(threshold: Double) throws -> CIImage {
+	func thresholdedImage(threshold: Float) throws -> CIImage {
 		var threasholdedImage: CIImage
 		do {
 			threasholdedImage = try ThresholdImageProcessorKernel.apply(
 				withExtent: self.extent,
 				inputs: [self],
-				arguments: [ThresholdImageProcessorKernel.inputThresholdKey: (1 - threshold) * 100]
+				arguments: [ThresholdImageProcessorKernel.inputThresholdKey: Float((1 - threshold) * 100)]
 			)
 		} catch {
 			throw GXUITestError.runtimeError(error.localizedDescription)
