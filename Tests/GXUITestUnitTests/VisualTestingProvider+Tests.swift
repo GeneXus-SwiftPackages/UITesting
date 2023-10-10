@@ -81,7 +81,7 @@ class VisualTestingProvider_Tests_ProviderWithURL : XCTestCase {
 		
 		stub(condition: isAbsoluteURLString("http://example.com/image.png")) { request in
 			guard let randomImage = TestHelpers.generateRandomImage(),
-				  let pngImageData = randomImage.pngData() else {
+				  let pngImageData = randomImage.rotatedPngData() else {
 				return TestHelpers.fail(with: "Unable to generate image for response")
 			}
 			

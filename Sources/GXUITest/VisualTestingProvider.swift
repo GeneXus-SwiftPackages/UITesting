@@ -124,13 +124,9 @@ internal class VisualTestingProvider {
 	}
 	
 	private func uploadImage(image: UIImage) throws -> String? {
-		guard let requestURL = imageUploadURL else {
-			throw VisualTestingError.invalidURL
-		}
+		guard let requestURL = imageUploadURL else { throw VisualTestingError.invalidURL }
 		
-		guard let pngData = image.pngData() else {
-			return nil
-		}
+		guard let pngData = image.rotatedPngData() else { return nil }
 		
 		return awaitPost(toURL: requestURL, data: pngData, mimeType: "image/png", resultKey: "object_id")
 	}

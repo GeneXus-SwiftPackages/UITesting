@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		2B1B32FF2AD5CD32006BD2C2 /* UITestingSampleAppUITestsGeneratedScreenshotTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2B1B32FE2AD5CD32006BD2C2 /* UITestingSampleAppUITestsGeneratedScreenshotTests.swift */; };
 		2B1C15852A8A8A2600015A71 /* UITestingSampleAppApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2B1C15842A8A8A2600015A71 /* UITestingSampleAppApp.swift */; };
 		2B1C15872A8A8A2600015A71 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2B1C15862A8A8A2600015A71 /* ContentView.swift */; };
 		2B1C15892A8A8A2900015A71 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 2B1C15882A8A8A2900015A71 /* Assets.xcassets */; };
@@ -27,6 +28,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		2B1B32FE2AD5CD32006BD2C2 /* UITestingSampleAppUITestsGeneratedScreenshotTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UITestingSampleAppUITestsGeneratedScreenshotTests.swift; sourceTree = "<group>"; };
 		2B1C15812A8A8A2600015A71 /* UITestingSampleApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = UITestingSampleApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		2B1C15842A8A8A2600015A71 /* UITestingSampleAppApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UITestingSampleAppApp.swift; sourceTree = "<group>"; };
 		2B1C15862A8A8A2600015A71 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -102,6 +104,7 @@
 		2B1C159F2A8A8A2900015A71 /* UITestingSampleAppUITests */ = {
 			isa = PBXGroup;
 			children = (
+				2B1B32FE2AD5CD32006BD2C2 /* UITestingSampleAppUITestsGeneratedScreenshotTests.swift */,
 				2B1C15A22A8A8A2900015A71 /* UITestingSampleAppUITestsScreenshotClippingTests.swift */,
 				2B4ACCF42AC11306003FA184 /* UITestingSampleApp.xctestplan */,
 				2BA961112ACDA45C001A1EF5 /* UITestingSampleAppUITestsGeneratedIntegrationTests.swift */,
@@ -229,6 +232,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				2B1C15A32A8A8A2900015A71 /* UITestingSampleAppUITestsScreenshotClippingTests.swift in Sources */,
+				2B1B32FF2AD5CD32006BD2C2 /* UITestingSampleAppUITestsGeneratedScreenshotTests.swift in Sources */,
 				2BA961122ACDA45C001A1EF5 /* UITestingSampleAppUITestsGeneratedIntegrationTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
