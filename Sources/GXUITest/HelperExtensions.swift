@@ -75,6 +75,34 @@ internal extension CGImage {
 	}
 }
 
+private extension UIImage.Orientation {
+	var isLandscape: Bool {
+		switch self {
+		case .left, .right, .leftMirrored, .rightMirrored:
+			return true
+			
+		default:
+			return false
+		}
+	}
+}
+
+internal extension UIImage {
+	func rotatedPngData() -> Data? {
+		guard self.imageOrientation != .up else { return self.pngData() }
+		
+		guard let cgImage else { return nil }
+		
+		var size = self.imageOrientation.isLandscape ? .init(width: self.size.height, height: self.size.width) : self.size
+		size = size.scaled(by: 1 / self.scale)
+		
+		let renderer = UIGraphicsImageRenderer(size: size, format: self.imageRendererFormat)
+		return renderer.pngData { ctx in
+			ctx.cgContext.draw(cgImage, in: .init(origin: .zero, size: size))
+		}
+	}
+}
+
 internal extension UIEdgeInsets {
 	func scaled(by scale: CGFloat) -> UIEdgeInsets {
 		UIEdgeInsets.init(top: self.top * scale, left: self.left * scale, bottom: self.bottom * scale, right: self.right * scale)
