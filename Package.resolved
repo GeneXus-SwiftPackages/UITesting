@@ -45,15 +45,6 @@
       }
     },
     {
-      "identity" : "gxxcodetools",
-      "kind" : "remoteSourceControl",
-      "location" : "https://github.com/jechague/GXXcodeTools.git",
-      "state" : {
-        "branch" : "main",
-        "revision" : "da21f4b9128af2b68664000ac6db5af8c63e1cfc"
-      }
-    },
-    {
       "identity" : "ohhttpstubs",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/AliSoftware/OHHTTPStubs.git",
@@ -87,6 +78,14 @@
       "state" : {
         "revision" : "0b77e67c484e532444ceeab60119b8536f8cd648",
         "version" : "0.3.0"
+      }
+    },
+    {
+      "identity" : "xcodetools",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/GeneXus-SwiftPackages/XcodeTools.git",
+      "state" : {
+        "revision" : "7d8c246ae52a189241823ac5bfc3abd7c567bd73"
       }
     },
     {
