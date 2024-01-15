@@ -20,7 +20,7 @@ struct RunTests {
 		try toolProvider.tool(named: "RunTests")
 	}
 	
-	private func extrctResultsTool(from toolProvider: ToolProvider) throws -> PackagePlugin.PluginContext.Tool {
+	private func extractResultsTool(from toolProvider: ToolProvider) throws -> PackagePlugin.PluginContext.Tool {
 		try toolProvider.tool(named: "ExtractTestResults")
 	}
 	
@@ -67,7 +67,7 @@ struct RunTests {
 			print("Test results path: \(xcResultsPath)")
 #endif
 		
-		let extractResultsTool = try self.extrctResultsTool(from: context)
+		let extractResultsTool = try self.extractResultsTool(from: context)
 		let extractTestsResults = try self.runProcess(with: extractResultsTool.path.string, arguments: [xcResultsPath, extractionPath ,"--extract-logs"])
 		
 		print(extractTestsResults)
