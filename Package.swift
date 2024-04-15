@@ -1,5 +1,7 @@
-// swift-tools-version: 5.7
+// swift-tools-version: 5.9
 import PackageDescription
+
+let GX_FC_LAST_VERSION = Version("2.0.0-beta")
 
 let package = Package(
 	name: "GXUITest",
@@ -10,7 +12,7 @@ let package = Package(
 			targets: ["GXUITest"])
 	],
 	dependencies: [
-		.package(url: "https://github.com/GeneXus-SwiftPackages/GXStandardClasses.git", .upToNextMajor(from: "1.1.0-beta")),
+		.package(url: "https://github.com/GeneXus-SwiftPackages/GXStandardClasses.git", .upToNextMajor(from: GX_FC_LAST_VERSION)),
 		.package(url: "https://github.com/AliSoftware/OHHTTPStubs.git", from: "9.1.0")
 	],
 	targets: [

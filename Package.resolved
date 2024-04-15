@@ -5,8 +5,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/GeneXus-SwiftPackages/GXDataLayer.git",
       "state" : {
-        "revision" : "fa1bbb0f0d5c3a3d465125debdd2e86bf62d13c4",
-        "version" : "1.1.0"
+        "revision" : "d43a3a10a9e25c3e860f5345d26cae09f028d181",
+        "version" : "2.0.0-beta.5"
       }
     },
     {
@@ -14,8 +14,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/GeneXus-SwiftPackages/GXFoundation.git",
       "state" : {
-        "revision" : "bc2fe741da9bb14119a44ad79ecc9e59ba3d0a6b",
-        "version" : "1.1.0"
+        "revision" : "c6ba71bb17b697270c3de4c6592066d69ffc995f",
+        "version" : "2.0.0-beta.5"
       }
     },
     {
@@ -23,8 +23,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/GeneXus-SwiftPackages/GXObjectsModel.git",
       "state" : {
-        "revision" : "7dceda23687951f97ef09604085d7e5bc1dd1f4d",
-        "version" : "1.1.0"
+        "revision" : "062fc02dbb37a6fa80a5e1c4fb9d44f067829835",
+        "version" : "2.0.0-beta.5"
       }
     },
     {
@@ -32,8 +32,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/GeneXus-SwiftPackages/GXStandardClasses.git",
       "state" : {
-        "revision" : "29ac2159e25ad6b45760c217d01601ae8522815a",
-        "version" : "1.1.0"
+        "revision" : "c1c12bd4889f57aca44f5f40206f707b343fff70",
+        "version" : "2.0.0-beta.5"
       }
     },
     {
@@ -50,8 +50,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/GeneXus-SwiftPackages/YAJL.git",
       "state" : {
-        "revision" : "65d223bac5586c86d2783026018ddaa99c6bf410",
-        "version" : "1.1.0"
+        "revision" : "d60df3cc94140926881178445cc06dff06bb9d6e",
+        "version" : "2.0.0-beta.5"
       }
     }
   ],
