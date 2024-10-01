@@ -954,7 +954,7 @@ fileprivate func _findControl(name: String, context: String?, elementTypes: Arra
 	return _findControl(name: name, searchRoot: searchRoot, elementTypes: elementTypes)
 }
 
-fileprivate let DEFAULT_CONTROL_EXISTANCE_TIMEOUT: UInt64 = 30 * 1_000_000_000 // 30 seconds in nanoseconds
+fileprivate let DEFAULT_CONTROL_EXISTANCE_TIMEOUT: TimeInterval = 30
 fileprivate let DEFAULT_CONTROL_FIND_RETRY_TIMERVAL: TimeInterval = 0.5
 fileprivate func _findControl(name: String, searchRoot: XCUIElement, elementTypes: Array<XCUIElement.ElementType> = _anyElementTypes) -> XCUIElement? {
 
@@ -977,17 +977,14 @@ fileprivate func _findControl(name: String, searchRoot: XCUIElement, elementType
 		}
 	}
 
-	var control: XCUIElement?
-	
-	var timeWaited: UInt64 = 0
-	while (control == nil && timeWaited < DEFAULT_CONTROL_EXISTANCE_TIMEOUT) {
-		let startTime = DispatchTime.now()
-		control = findElementWithIdentifierIgnoringCase(name)
+	let timeout = Date(timeIntervalSinceNow: DEFAULT_CONTROL_EXISTANCE_TIMEOUT)
+	repeat {
+		if let control = findElementWithIdentifierIgnoringCase(name) {
+			return control
+		}
 		_waitSeconds(DEFAULT_CONTROL_FIND_RETRY_TIMERVAL)
-		let elapsedTime = DispatchTime.now().uptimeNanoseconds - startTime.uptimeNanoseconds
-		timeWaited += elapsedTime
-	}
-	return control
+	} while (timeout.timeIntervalSinceNow > 0)
+	return nil
 }
 
 fileprivate func _findApplicationBarControl(_ controlName: String) -> XCUIElement? {
