@@ -306,14 +306,13 @@ public class SdtUITestSD : VisualTestingServerProvider {
 
 	public func verifycontrolenabled( _ controlName: String, _ expected: Bool = true, _ context: String? = nil) {
 		runActivity(forAction: "VerifyControlEnabled", target: controlName, inContext: context) {
-			// TODO: control.isEnabled is returning 'true' even when the control is no enabled
-//			if let control = _findControl(name: controlName, context: context, elementTypes: _allElementTypes) {
-//				let enabled = control.isEnabled
-//				XCTAssert(enabled == expected, "Control '\(controlName)' should \(expected ? "" : "not ")be enabled but it was\(enabled ? "" : " not").")
-//			}
-//			else {
-//				XCTAssert(false, "Could not find control with name '\(controlName)'")
-//			}
+			if let control = _findControl(name: controlName, context: context, elementTypes: _allElementTypes) {
+				let enabled = control.isEnabled
+				XCTAssert(enabled == expected, "Control '\(controlName)' should \(expected ? "" : "not ")be enabled but it was\(enabled ? "" : " not").")
+			}
+			else {
+				XCTAssert(false, "Could not find control with name '\(controlName)'")
+			}
 		}
 	}
 
