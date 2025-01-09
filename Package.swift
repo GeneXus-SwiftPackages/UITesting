@@ -1,11 +1,11 @@
 // swift-tools-version: 5.9
 import PackageDescription
 
-let GX_FC_LAST_VERSION = Version("2.0.0-beta")
+let GX_FC_LAST_VERSION = Version("3.0.0-beta")
 
 let package = Package(
 	name: "GXUITest",
-	platforms: [.iOS("12.0")],
+	platforms: [.iOS("13.0")],
 	products: [
 		.library(
 			name: "GXUITest",
