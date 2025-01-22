@@ -820,7 +820,10 @@ public class SdtUITestSD : VisualTestingServerProvider {
 		var value: Any? = nil
 		switch control.elementType {
 		case .staticText:
-			value = control.label
+			value = control.value
+			if value == nil || (value as? String)?.isEmpty == true {
+				value = control.label
+			}
 		case .segmentedControl:
 			let buttonsQuery = control.descendants(matching: .button)
 			for i in 0..<buttonsQuery.count {
