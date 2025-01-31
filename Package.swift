@@ -5,7 +5,7 @@ let GX_FC_LAST_VERSION = Version("3.0.0-beta")
 
 let package = Package(
 	name: "GXUITest",
-	platforms: [.iOS("13.0")],
+	platforms: [.iOS("15.0")],
 	products: [
 		.library(
 			name: "GXUITest",
