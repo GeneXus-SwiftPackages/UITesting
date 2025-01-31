@@ -13,7 +13,7 @@ let package = Package(
 	],
 	dependencies: [
 		.package(url: "https://github.com/GeneXus-SwiftPackages/GXStandardClasses.git", .upToNextMajor(from: GX_FC_LAST_VERSION)),
-		.package(url: "https://github.com/AliSoftware/OHHTTPStubs.git", from: "9.1.0")
+		.package(url: "https://github.com/AliSoftware/OHHTTPStubs.git", .upToNextMajor(from: "9.1.0")),
 	],
 	targets: [
 		.target(name: "GXUITest",
