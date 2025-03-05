@@ -862,6 +862,7 @@ fileprivate let _allElementTypes: Array<XCUIElement.ElementType> = [.textField,
 																	.checkBox,
 																	.switch,
 																	.segmentedControl,
+								    									.scrollView,
 																	.other]
 
 fileprivate let _tapableElementTypes: Array<XCUIElement.ElementType> = [.button,
@@ -874,6 +875,7 @@ fileprivate let _tapableElementTypes: Array<XCUIElement.ElementType> = [.button,
 																		.checkBox,
 																		.switch,
 																		.segmentedControl,
+																		.scrollView,
 																		.other]
 
 fileprivate let _textInputElementTypes: Array<XCUIElement.ElementType> = [.textField,
