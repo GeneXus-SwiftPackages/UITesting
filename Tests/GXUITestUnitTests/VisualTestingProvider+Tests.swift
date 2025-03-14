@@ -276,7 +276,8 @@ class TestHelpers {
 	}
 }
 
-extension HTTPStubsResponse : Error {  }
+extension HTTPStubsResponse: @unchecked Sendable { }
+extension HTTPStubsResponse : @retroactive Error { }
 
 private extension HTTPStubsResponse {
 	static var genericClientErrorResponse : HTTPStubsResponse {
