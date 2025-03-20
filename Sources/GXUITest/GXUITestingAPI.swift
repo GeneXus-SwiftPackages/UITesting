@@ -248,8 +248,30 @@ public class SdtUITestSD : VisualTestingServerProvider {
 
 	public func verifytext(_ text: String, _ expected: Bool = true, _ context: String? = nil) {
 		runActivity(forAction: "VerifyText", target: text, inContext: context) {
-			let control = _findControl(name: text, context: context)
-			let found = control != nil
+			let found: Bool = {
+				let predicateTemplate = NSPredicate(format: "label = $text OR value = $text OR title = $text OR (placeholderValue = $text AND value = nil)")
+				let predicate = predicateTemplate.withSubstitutionVariables(["text": text])
+				let contextDescendantsQuery: XCUIElementQuery
+				let contextElement: XCUIElement?
+				if context == "applicationbar" {
+					let barsElementTypes: [XCUIElement.ElementType] = [.navigationBar, .toolbar]
+					let barsPredicate = NSPredicate(format: "elementType IN %@", argumentArray: [barsElementTypes.map(\.rawValue)])
+					contextDescendantsQuery = XCUIApplication().descendants(matching: .any).matching(barsPredicate).descendants(matching: .any)
+					contextElement = nil
+				}
+				else {
+					guard let contextElement_ = _findContextElement(context, controlRootElement: true) else {
+						return false
+					}
+					contextElement = contextElement_.elementType == .application ? nil : contextElement_
+					contextDescendantsQuery = contextElement_.descendants(matching: .any)
+				}
+				if let contextElement, predicate.evaluate(with: contextElement) {
+					return true
+				}
+				let matchingElement = contextDescendantsQuery.element(matching: predicate)
+				return matchingElement.exists
+			}()
 			XCTAssert(found == expected, "Text '\(text)' was \(expected ? "" : "not ")expected but did \(found ? "" : "not ")find it")
 		}
 	}
@@ -628,7 +650,7 @@ public class SdtUITestSD : VisualTestingServerProvider {
 
 	private func tapNavigationBarDoneButton() {
 		let findDoneButton: () -> XCUIElement? = { () in
-			let navBar = _findElement(withName: nil, inQuery: XCUIApplication().navigationBars)
+			let navBar = XCUIApplication().navigationBars
 			let query = navBar.descendants(matching: .button).matching(identifier: "Done")
 			return query.count > 0 ? query.element(boundBy: 0) : nil
 		}
@@ -896,15 +918,16 @@ fileprivate func _applyControlNameCasing(_ name: String) -> String {
 	return head + tail
 }
 
-fileprivate func _findContextElement(_ context: String?, root: XCUIElement) -> XCUIElement? {
+fileprivate func _findContextElement(_ context: String?, root: XCUIElement = XCUIApplication(), controlRootElement: Bool = false) -> XCUIElement? {
 	guard let context = context else {
-		return root;
+		return root
 	}
+	
 
 	let components = context.components(separatedBy: CharacterSet(charactersIn: "."))
 	var searchRoot = root
-	for component in components {
-		if let itemIndex = _findItemIndex(in: component) {
+	for component in components.enumerated() {
+		if let itemIndex = _findItemIndex(in: component.element) {
 			if itemIndex > 0 && itemIndex <= searchRoot.cells.count {
 				searchRoot = searchRoot.cells.element(boundBy: itemIndex-1)
 			}
@@ -914,16 +937,26 @@ fileprivate func _findContextElement(_ context: String?, root: XCUIElement) -> X
 		}
 		else {
 			// control name expression
-			let query = searchRoot.descendants(matching: .any).matching(identifier: _applyControlNameCasing(component))
-			if query.count > 0 {
-				searchRoot = query.element(boundBy: 0)
+			let identifier = _applyControlNameCasing(component.element)
+			let descendantsQuery = searchRoot.descendants(matching: .any)
+			let controlQuery: XCUIElementQuery
+			if controlRootElement, component.offset == components.count - 1 {
+				let controlRootId = identifier.appending(":-:gxroot:-:")
+				let identifiers = [controlRootId, identifier]
+				let predicate = NSPredicate(format: "identifier IN %@", identifiers)
+				controlQuery = descendantsQuery.matching(predicate)
 			}
 			else {
-				break;
+				controlQuery = descendantsQuery.matching(identifier: identifier)
 			}
+			let controlElement = controlQuery.firstMatch
+			guard controlElement.exists else {
+				break
+			}
+			searchRoot = controlElement
 		}
 	}
-	return searchRoot;
+	return searchRoot
 }
 
 fileprivate func _findItemIndex(in text: String) -> Int? {
@@ -947,7 +980,7 @@ fileprivate func _findControl(name: String, context: String?, elementTypes: Arra
 		return _findApplicationBarControl(name)
 	}
 
-	guard var searchRoot = _findContextElement(context, root: XCUIApplication()) else {
+	guard var searchRoot = _findContextElement(context) else {
 		return nil
 	}
 
@@ -1035,11 +1068,4 @@ fileprivate func _findApplicationBarControl(_ controlName: String) -> XCUIElemen
 		}
 	}
 	return control
-}
-
-fileprivate func _findElement(withName name: String?, inQuery query: XCUIElementQuery) -> XCUIElementQuery {
-	if let name = name {
-		return query.matching(identifier: name)
-	}
-	return query
 }
