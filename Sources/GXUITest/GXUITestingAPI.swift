@@ -292,7 +292,7 @@ public class SdtUITestSD : VisualTestingServerProvider {
 		runActivity(forAction: "VerifyCheckbox", target: controlName, inContext: context) {
 			if let control = _findControl(name: controlName, context: context, elementTypes: _allElementTypes) {
 				let selected = control.isSelected;
-				XCTAssert(selected == value, "Checkbox '\(controlName)' was expected to be \(value ? "un" : "")selected but is not.")
+				XCTAssert(selected == value, "Checkbox '\(controlName)' was expected to be \(value ? "" : "un")selected but is not.")
 			}
 			else {
 				XCTAssert(false, "Could not find grid with name '\(controlName)'")
