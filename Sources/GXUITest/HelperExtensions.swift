@@ -63,6 +63,19 @@ internal extension XCUIElement {
 			self.typeText(XCUIKeyboardKey.delete.rawValue)
 		}
 	}
+	
+	func swipe(_ direction: GXSwipeDirection) {
+		switch direction {
+		case .up:
+			swipeUp()
+		case .down:
+			swipeDown()
+		case .left:
+			swipeLeft()
+		case .right:
+			swipeRight()
+		}
+	}
 }
 
 internal extension CGImage {
