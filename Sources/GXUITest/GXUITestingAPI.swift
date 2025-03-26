@@ -78,8 +78,7 @@ public class SdtUITestSD : VisualTestingServerProvider {
 				XCTFail("Could not find control with name '\(controlName)'")
 				return
 			}
-			control.clearText()
-			control.typeText(value)
+			control.repaceText(value)
 		}
 	}
 	

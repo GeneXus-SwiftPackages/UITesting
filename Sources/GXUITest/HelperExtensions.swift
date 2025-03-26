@@ -24,44 +24,31 @@ internal extension XCUIElement {
 		}
 	}
 
-	private func hasFocus() -> Bool {
+	private var gxHasKeyboardFocus: Bool {
 		return self.value(forKey: "hasKeyboardFocus") as? Bool ?? false
 	}
-
-	private func isKeyboardVisible() -> Bool {
-		XCUIApplication().keyboards.count > 0
+	
+	private func dismissKeyboard() {
+		/// As documented in example: https://developer.apple.com/documentation/xctest/grouping-tests-into-substeps-with-activities#Organize-Long-Test-Methods-into-Substeps
+		XCUIApplication().children(matching: .window).firstMatch.tap()
 	}
-
-	func clearText() {
-		if !self.hasFocus() {
-			self.tap()
+	
+	func repaceText(_ text: String) {
+		var usePasteboard: Bool = false
+		if !gxHasKeyboardFocus {
+			tap()
+			usePasteboard = !gxHasKeyboardFocus
 		}
-		
-		if self.hasText() {
-			let clearButton = self.descendants(matching: .button).matching(identifier: "Clear text")
-			if clearButton.count > 0 {
-				clearButton.element(boundBy: 0).tap()
-				self.tap()
-				return
-			}
-
-			let menuItems = XCUIApplication().descendants(matching: .menuItem)
-			let menuItemQuery = menuItems.matching(identifier: "Select All")
-
-			if !(menuItems.count > 0) {
-				self.press(forDuration: 1.5) // tap and hold to select all
-				_waitMilliseconds(500)
-			}
-			
-			if menuItemQuery.count > 0 {
-				menuItemQuery.element(boundBy: 0).tap()
-			}
-
-			if !isKeyboardVisible() {
-				self.tap()
-			}
-			self.typeText(XCUIKeyboardKey.delete.rawValue)
+		doubleTap() /// To select all and show menu items
+		if usePasteboard {
+			/// Avoids 'Neither element nor any descendant has keyboard focus' on typeText(_:)
+			UIPasteboard.general.string = text
+			XCUIApplication().menuItems["Paste"].tap()
 		}
+		else {
+			typeText(text)
+		}
+		dismissKeyboard()
 	}
 	
 	func swipe(_ direction: GXSwipeDirection) {
