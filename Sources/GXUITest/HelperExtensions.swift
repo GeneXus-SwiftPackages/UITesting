@@ -39,7 +39,19 @@ internal extension XCUIElement {
 			tap()
 			usePasteboard = !gxHasKeyboardFocus
 		}
-		doubleTap() /// To select all and show menu items
+		if hasText() {
+			let selectAllMenuItem = XCUIApplication().menuItems["Select All"]
+			if !selectAllMenuItem.exists {
+				tap()
+				if !selectAllMenuItem.exists {
+					if !selectAllMenuItem.waitForExistence(timeout: 0.2) {
+						tap()
+						selectAllMenuItem.waitForExistence(timeout: 0.5)
+					}
+				}
+				selectAllMenuItem.tap()
+			}
+		}
 		if usePasteboard {
 			/// Avoids 'Neither element nor any descendant has keyboard focus' on typeText(_:)
 			UIPasteboard.general.string = text
