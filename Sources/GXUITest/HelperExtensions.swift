@@ -39,23 +39,22 @@ internal extension XCUIElement {
 			tap()
 			usePasteboard = !gxHasKeyboardFocus
 		}
+		lazy var menuItems = XCUIApplication().menuItems
 		if hasText() {
-			let selectAllMenuItem = XCUIApplication().menuItems["Select All"]
+			let selectAllMenuItem = menuItems["Select All"]
 			if !selectAllMenuItem.exists {
-				tap()
-				if !selectAllMenuItem.exists {
-					if !selectAllMenuItem.waitForExistence(timeout: 0.2) {
-						tap()
-						selectAllMenuItem.waitForExistence(timeout: 0.5)
-					}
+				if menuItems.firstMatch.exists {
+					tap() /// Dismiss existing context menu if does not includes "Select All"
 				}
+				press(forDuration: 1.0) /// Long press to bring "Select All" menu item (double tap is faster but does not always shows "Select All")
+				selectAllMenuItem.waitForExistence(timeout: 0.5)
 				selectAllMenuItem.tap()
 			}
 		}
 		if usePasteboard {
 			/// Avoids 'Neither element nor any descendant has keyboard focus' on typeText(_:)
 			UIPasteboard.general.string = text
-			XCUIApplication().menuItems["Paste"].tap()
+			menuItems["Paste"].tap()
 		}
 		else {
 			typeText(text)
