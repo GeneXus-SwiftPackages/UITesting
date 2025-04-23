@@ -463,7 +463,7 @@ public class SdtUITestSD : VisualTestingServerProvider {
 				XCTFail("Could not find control with name '\(controlName)'")
 				return
 			}
-			rows = control.children(matching: .cell).count
+			rows = control.children(matching: .cell).matching(NSPredicate(format: "identifier != %@", GXAccessibilityTag.loadingCell.tagString)).count
 		}
 		return rows
 	}
