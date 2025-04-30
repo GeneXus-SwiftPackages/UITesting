@@ -792,8 +792,9 @@ public class SdtUITestSD : VisualTestingServerProvider {
 			return true
 		}
 		else {
+			let receivedNoNewlines = received.replacingOccurrences(of: "\n", with: " ")
 			let expectedNoNewlines = expected.replacingOccurrences(of: "\n", with: " ")
-			return received == expectedNoNewlines
+			return receivedNoNewlines == expectedNoNewlines
 		}
 	}
 }
