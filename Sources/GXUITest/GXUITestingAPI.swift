@@ -225,7 +225,8 @@ public class SdtUITestSD : VisualTestingServerProvider {
 	
 	public func verifytext(_ text: String, _ expected: Bool = true, _ context: String? = nil) {
 		runActivity(forAction: "VerifyText", target: text, inContext: context) {
-			let found: Bool = _findElement(.visibleText(text), context: context, includingContextElement: true, timeout: 0) != nil
+			let timeout: TimeInterval = expected ? DEFAULT_ELEMENT_EXISTANCE_TIMEOUT : DEFAULT_ELEMENT_NON_EXISTANCE_TIMEOUT
+			let found: Bool = _findElement(.visibleText(text), context: context, includingContextElement: true, timeout: timeout) != nil
 			XCTAssert(found == expected, "Text '\(text)' was \(expected ? "" : "not ")expected but did \(found ? "" : "not ")find it")
 		}
 	}
