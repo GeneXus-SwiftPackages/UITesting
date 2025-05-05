@@ -44,7 +44,8 @@ public class SdtUITestSD : VisualTestingServerProvider {
 	
 	public func tap(_ target: String, _ context: String? = nil) {
 		runActivity(forAction: "Tap", target: target, inContext: context) {
-			guard let control = _findElement(ElementSearchIdentifier.target(target), context: context, elementTypes: _tapableElementTypes) else {
+			let elementTypes = _tapableElementTypes
+			guard let control = _findElement(ElementSearchIdentifier.target(target), context: context, elementTypes: elementTypes, disambiguateUsing: _elementTypeDisambiguator(for: elementTypes)) else {
 				XCTFail("Could not find target '\(target)'")
 				return
 			}
@@ -54,7 +55,8 @@ public class SdtUITestSD : VisualTestingServerProvider {
 	
 	public func longtap(_ target: String, _ context: String? = nil) {
 		runActivity(forAction: "LongTap", target: target, inContext: context) {
-			guard let control = _findElement(ElementSearchIdentifier.target(target), context: context, elementTypes: _tapableElementTypes) else {
+			let elementTypes = _tapableElementTypes
+			guard let control = _findElement(ElementSearchIdentifier.target(target), context: context, elementTypes: elementTypes, disambiguateUsing: _elementTypeDisambiguator(for: elementTypes)) else {
 				XCTFail("Could not find target '\(target)'")
 				return
 			}
@@ -64,7 +66,8 @@ public class SdtUITestSD : VisualTestingServerProvider {
 	
 	public func doubletap(_ target: String, _ context: String? = nil) {
 		runActivity(forAction: "DoubleTap", target: target, inContext: context) {
-			guard let control = _findElement(ElementSearchIdentifier.target(target), context: context, elementTypes: _tapableElementTypes) else {
+			let elementTypes = _tapableElementTypes
+			guard let control = _findElement(ElementSearchIdentifier.target(target), context: context, elementTypes: elementTypes, disambiguateUsing: _elementTypeDisambiguator(for: elementTypes)) else {
 				XCTFail("Could not find target '\(target)'")
 				return
 			}
@@ -924,14 +927,16 @@ fileprivate func _findElement(_ searchId: ElementSearchIdentifier,
 							  context: String?,
 							  includingContextElement: Bool = false,
 							  elementTypes: Array<XCUIElement.ElementType> = _anyElementTypes,
+							  disambiguateUsing disambiguator: (([XCUIElement]) -> XCUIElement?)? = nil,
 							  timeout: TimeInterval = DEFAULT_ELEMENT_EXISTANCE_TIMEOUT) -> XCUIElement? {
-	_findElement([searchId], context: context, includingContextElement: includingContextElement, elementTypes: elementTypes, timeout: timeout)
+	_findElement([searchId], context: context, includingContextElement: includingContextElement, elementTypes: elementTypes, disambiguateUsing: disambiguator, timeout: timeout)
 }
 
 fileprivate func _findElement(_ searchIds: [ElementSearchIdentifier],
 							  context: String?,
 							  includingContextElement: Bool = false,
 							  elementTypes: Array<XCUIElement.ElementType> = _anyElementTypes,
+							  disambiguateUsing disambiguator: (([XCUIElement]) -> XCUIElement?)? = nil,
 							  timeout: TimeInterval = DEFAULT_ELEMENT_EXISTANCE_TIMEOUT) -> XCUIElement? {
 	if context == "applicationbar" {
 		return _findApplicationBarElement(searchIds, elementTypes: elementTypes, timeout: timeout)
@@ -948,28 +953,31 @@ fileprivate func _findElement(_ searchIds: [ElementSearchIdentifier],
 		includingSearchRoot = false
 	}
 	
-	return _findElement(searchIds, searchRoot: searchRoot, includingSearchRoot: includingSearchRoot, elementTypes: elementTypes, timeout: timeout)
+	return _findElement(searchIds, searchRoot: searchRoot, includingSearchRoot: includingSearchRoot, elementTypes: elementTypes, disambiguateUsing: disambiguator, timeout: timeout)
 }
 
 fileprivate func _findElement(_ searchId: ElementSearchIdentifier,
 							  searchRoot: XCUIElement,
 							  includingSearchRoot: Bool = false,
 							  elementTypes: Array<XCUIElement.ElementType> = _anyElementTypes,
+							  disambiguateUsing disambiguator: (([XCUIElement]) -> XCUIElement?)? = nil,
 							  timeout: TimeInterval = DEFAULT_ELEMENT_EXISTANCE_TIMEOUT) -> XCUIElement? {
-	_findElement([searchId], searchRoot: searchRoot, includingSearchRoot: includingSearchRoot, elementTypes: elementTypes, timeout: timeout)
+	_findElement([searchId], searchRoot: searchRoot, includingSearchRoot: includingSearchRoot, elementTypes: elementTypes, disambiguateUsing: disambiguator, timeout: timeout)
 }
 
 fileprivate func _findElement(_ searchIds: [ElementSearchIdentifier],
 							  searchRoot: XCUIElement,
 							  includingSearchRoot: Bool = false,
 							  elementTypes: Array<XCUIElement.ElementType> = _anyElementTypes,
+							  disambiguateUsing disambiguator: (([XCUIElement]) -> XCUIElement?)? = nil,
 							  timeout: TimeInterval = DEFAULT_ELEMENT_EXISTANCE_TIMEOUT) -> XCUIElement? {
-	_findElement(searchIds, searchRoot: .first((element: searchRoot, includingSearchRootElement: includingSearchRoot)), elementTypes: elementTypes, timeout: timeout)
+	_findElement(searchIds, searchRoot: .first((element: searchRoot, includingSearchRootElement: includingSearchRoot)), elementTypes: elementTypes, disambiguateUsing: disambiguator, timeout: timeout)
 }
 
 fileprivate func _findElement(_ searchIds: [ElementSearchIdentifier],
 							  searchRoot: GXEither<(element: XCUIElement, includingSearchRootElement: Bool), XCUIElementQuery>,
 							  elementTypes: Array<XCUIElement.ElementType> = _anyElementTypes,
+							  disambiguateUsing disambiguator: (([XCUIElement]) -> XCUIElement?)? = nil,
 							  timeout: TimeInterval = DEFAULT_ELEMENT_EXISTANCE_TIMEOUT) -> XCUIElement? {
 	
 	guard !elementTypes.isEmpty, !searchIds.isEmpty else {
@@ -1003,16 +1011,52 @@ fileprivate func _findElement(_ searchIds: [ElementSearchIdentifier],
 		}
 		return searchRootDescendantsQuery.matching(elementTypePredicate)
 	}()
-	let matchingElement = elementTypeQuery.matching(searchIdsPredicate).firstMatch
-	if matchingElement.exists {
-		return matchingElement
+	let matchingQuery = elementTypeQuery.matching(searchIdsPredicate)
+	let firstMatchingElement = matchingQuery.firstMatch
+	if let disambiguator {
+		let allMatchingElements = matchingQuery.allElementsBoundByIndex
+		if !allMatchingElements.isEmpty {
+			return disambiguator(allMatchingElements)
+		}
+	}
+	else {
+		if firstMatchingElement.exists {
+			return firstMatchingElement
+		}
 	}
 	if timeout > 0 {
-		if matchingElement.waitForExistence(timeout: timeout) {
-			return matchingElement
+		if firstMatchingElement.waitForExistence(timeout: timeout) {
+			if let disambiguator {
+				let allMatchingElements = matchingQuery.allElementsBoundByIndex
+				if !allMatchingElements.isEmpty {
+					return disambiguator(allMatchingElements)
+				}
+			}
+			else {
+				return firstMatchingElement
+			}
 		}
 	}
 	return nil
+}
+
+fileprivate func _elementTypeDisambiguator(for elementTypes: Array<XCUIElement.ElementType>) -> (([XCUIElement]) -> XCUIElement?)? {
+	guard elementTypes.count > 1 else { return nil }
+	return { elements in
+		guard elements.count > 1 else { return elements.first }
+		func elementTypeIndex(of element: XCUIElement) -> Int? {
+			elementTypes.firstIndex(of: element.elementType)
+		}
+		return elements.reduce(nil as (element: XCUIElement, elementTypeIndex: Int)?) { partialResult, element in
+			guard let elementTypeIndex = elementTypeIndex(of: element) else {
+				return partialResult
+			}
+			guard let partialResult, partialResult.elementTypeIndex <= elementTypeIndex else {
+				return (element, elementTypeIndex)
+			}
+			return partialResult
+		}?.element
+	}
 }
 
 fileprivate enum GXAccessibilityTag: String {
