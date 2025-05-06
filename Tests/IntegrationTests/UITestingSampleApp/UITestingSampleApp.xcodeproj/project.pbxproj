@@ -15,6 +15,7 @@
 		2B1C15A32A8A8A2900015A71 /* UITestingSampleAppUITestsScreenshotClippingTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2B1C15A22A8A8A2900015A71 /* UITestingSampleAppUITestsScreenshotClippingTests.swift */; };
 		2B1C15B22A8A8B1100015A71 /* GXUITest in Frameworks */ = {isa = PBXBuildFile; productRef = 2B1C15B12A8A8B1100015A71 /* GXUITest */; };
 		2BA961122ACDA45C001A1EF5 /* UITestingSampleAppUITestsGeneratedIntegrationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2BA961112ACDA45C001A1EF5 /* UITestingSampleAppUITestsGeneratedIntegrationTests.swift */; };
+		934F54812DC25D8400657349 /* GXUIApplication in Frameworks */ = {isa = PBXBuildFile; productRef = 934F54802DC25D8400657349 /* GXUIApplication */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -47,6 +48,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				934F54812DC25D8400657349 /* GXUIApplication in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -188,6 +190,9 @@
 				Base,
 			);
 			mainGroup = 2B1C15782A8A8A2600015A71;
+			packageReferences = (
+				934F547F2DC25D8400657349 /* XCRemoteSwiftPackageReference "GXUIApplication" */,
+			);
 			productRefGroup = 2B1C15822A8A8A2600015A71 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -508,10 +513,26 @@
 		};
 /* End XCConfigurationList section */
 
+/* Begin XCRemoteSwiftPackageReference section */
+		934F547F2DC25D8400657349 /* XCRemoteSwiftPackageReference "GXUIApplication" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/GeneXus-SwiftPackages/GXUIApplication.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = "3.0.0-beta";
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
 /* Begin XCSwiftPackageProductDependency section */
 		2B1C15B12A8A8B1100015A71 /* GXUITest */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = GXUITest;
+		};
+		934F54802DC25D8400657349 /* GXUIApplication */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 934F547F2DC25D8400657349 /* XCRemoteSwiftPackageReference "GXUIApplication" */;
+			productName = GXUIApplication;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};
