@@ -125,3 +125,19 @@ internal enum GXSwipeDirection: Int, CustomStringConvertible {
 		}
 	}
 }
+
+internal enum GXSwipeDirection: Int, CustomStringConvertible {
+	case up = 1
+	case down = 2
+	case left = 3
+	case right = 4
+	
+	var description: String {
+		switch self {
+		case .up: return "up"
+		case .down: return "down"
+		case .left: return "left"
+		case .right: return "right"
+		}
+	}
+}
