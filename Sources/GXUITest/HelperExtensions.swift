@@ -9,58 +9,93 @@ import Foundation
 import XCTest
 
 internal extension XCUIElement {
-
-	private func hasText() -> Bool {
-		if let placeholder = self.placeholderValue {
-			if let value = self.value as? String {
-				return value != placeholder
+	
+	private var mayHaveNonEmptyText: Bool {
+		guard let value = value else {
+			return false
+		}
+		guard let stringValue = value as? String else {
+			return placeholderValue != nil
+		}
+		return !stringValue.isEmpty
+	}
+	
+	private var gxHasKeyboardFocus: Bool {
+		return value(forKey: "hasKeyboardFocus") as? Bool ?? false
+	}
+	
+	private func dismissKeyboard() {
+		/// As documented in example: https://developer.apple.com/documentation/xctest/grouping-tests-into-substeps-with-activities#Organize-Long-Test-Methods-into-Substeps
+		XCUIApplication().children(matching: .window).firstMatch.tap()
+	}
+	
+	private func tapContextMenuItem(_ menuItem: String, required: Bool = true) {
+		let menuItems = XCUIApplication().menuItems
+		let menuItemElement = menuItems[menuItem]
+		if !menuItemElement.exists {
+			if menuItems.firstMatch.exists {
+				tap() /// Dismiss existing context menu if it does not include the menuItemElement
 			}
-			else {
-				return false
+			let longPressDuration: TimeInterval = 1.0
+			press(forDuration: longPressDuration) /// Long press to bring the menuItemElement (double tap is faster but does not always show the menuItemElement)
+			let waitForExistenceTimeout: TimeInterval = required ? 0.5 : 0.1
+			var exists = menuItemElement.waitForExistence(timeout: waitForExistenceTimeout)
+			if !exists {
+				if !menuItems.firstMatch.exists {
+					press(forDuration: longPressDuration) /// Retry with a second long press if there was no context menu visible
+					exists = menuItemElement.waitForExistence(timeout: waitForExistenceTimeout)
+				}
+				guard exists || required else {
+					return
+				}
 			}
+		}
+		menuItemElement.tap()
+	}
+	
+	func repaceText(_ text: String) {
+		var usePasteboard: Bool = false
+		if !gxHasKeyboardFocus {
+			tap()
+			usePasteboard = !gxHasKeyboardFocus
+		}
+		if mayHaveNonEmptyText {
+			var useSelectAll = true
+			if !usePasteboard {
+				let clearButton = buttons["Clear text"]
+				if clearButton.exists {
+					useSelectAll = false
+					clearButton.tap()
+					if !gxHasKeyboardFocus {
+						tap()
+					}
+				}
+			}
+			if useSelectAll {
+				tapContextMenuItem("Select All", required: false) /// "Select All" menu item may not be displayed if text element was actually empty
+			}
+		}
+		if usePasteboard {
+			/// Avoids 'Neither element nor any descendant has keyboard focus' on typeText(_:)
+			UIPasteboard.general.string = text
+			tapContextMenuItem("Paste")
 		}
 		else {
-			return self.value != nil
+			typeText(text)
 		}
+		dismissKeyboard()
 	}
-
-	private func hasFocus() -> Bool {
-		return self.value(forKey: "hasKeyboardFocus") as? Bool ?? false
-	}
-
-	private func isKeyboardVisible() -> Bool {
-		XCUIApplication().keyboards.count > 0
-	}
-
-	func clearText() {
-		if !self.hasFocus() {
-			self.tap()
-		}
-		
-		if self.hasText() {
-			let clearButton = self.descendants(matching: .button).matching(identifier: "Clear text")
-			if clearButton.count > 0 {
-				clearButton.element(boundBy: 0).tap()
-				self.tap()
-				return
-			}
-
-			let menuItems = XCUIApplication().descendants(matching: .menuItem)
-			let menuItemQuery = menuItems.matching(identifier: "Select All")
-
-			if !(menuItems.count > 0) {
-				self.press(forDuration: 1.5) // tap and hold to select all
-				_waitMilliseconds(500)
-			}
-			
-			if menuItemQuery.count > 0 {
-				menuItemQuery.element(boundBy: 0).tap()
-			}
-
-			if !isKeyboardVisible() {
-				self.tap()
-			}
-			self.typeText(XCUIKeyboardKey.delete.rawValue)
+	
+	func swipe(_ direction: GXSwipeDirection) {
+		switch direction {
+		case .up:
+			swipeUp()
+		case .down:
+			swipeDown()
+		case .left:
+			swipeLeft()
+		case .right:
+			swipeRight()
 		}
 	}
 }
