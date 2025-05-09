@@ -1,6 +1,24 @@
 {
   "pins" : [
     {
+      "identity" : "gxcorebl",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/GeneXus-SwiftPackages/GXCoreBL.git",
+      "state" : {
+        "revision" : "948e89df66b5eb9465eef27198860326f77f27d7",
+        "version" : "3.1.0"
+      }
+    },
+    {
+      "identity" : "gxcoreui",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/GeneXus-SwiftPackages/GXCoreUI.git",
+      "state" : {
+        "revision" : "f8c6cfe6334914afbdcbe15f18e457e4e8cda8d0",
+        "version" : "3.1.0"
+      }
+    },
+    {
       "identity" : "gxdatalayer",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/GeneXus-SwiftPackages/GXDataLayer.git",
@@ -33,6 +51,15 @@
       "location" : "https://github.com/GeneXus-SwiftPackages/GXStandardClasses.git",
       "state" : {
         "revision" : "e8c69bfa5e33a8d0501500475a9b5306a188da8c",
+        "version" : "3.1.0"
+      }
+    },
+    {
+      "identity" : "gxuiapplication",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/GeneXus-SwiftPackages/GXUIApplication.git",
+      "state" : {
+        "revision" : "93ba9965734382baedebe86f97f9b84832fafe36",
         "version" : "3.1.0"
       }
     },

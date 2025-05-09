@@ -9,14 +9,9 @@ import XCTest
 
 @testable import GXUITest
 
-final class UITestingSampleAppUITestsGeneratedScreenshotTests: XCTestCase {
-	
-	override class var runsForEachTargetApplicationUIConfiguration: Bool { false }
+final class UITestingSampleAppUITestsGeneratedScreenshotTests: GXUIXCTestCase {
 	
 	func testDeviceOrientation_ShouldBePreserved() throws {
-		let app = XCUIApplication()
-		app.launch()
-		
 		XCUIDevice.shared.orientation = .landscapeLeft
 		
 		let screenshot = GXUITestingHelpers.screenshotImage(from: XCUIScreen.main, clipToSafeArea: .none)
