@@ -1,7 +1,7 @@
 // swift-tools-version: 5.9
 import PackageDescription
 
-let GX_FC_LAST_VERSION = Version("3.1.0-beta")
+let GX_FC_LAST_VERSION = Version("4.0.0-beta")
 
 let package = Package(
 	name: "GXUITest",
