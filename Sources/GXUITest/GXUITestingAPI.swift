@@ -392,7 +392,9 @@ public class SdtUITestSD : VisualTestingServerProvider {
 									// Perceptual comparison passed
 								} else {
 									try? visualTestingProvider.saveImageWithDifference(image: capturedImage)
-									XCTFail("Screenshots do not match for image reference '\(reference)'")
+                                    let diffInfo = visualTestingProvider.resourceDiffId.map { "\($0)" } ?? "<not available>"
+                                    XCTFail("Screenshots do not match for image reference '\(reference)'. ResourceDiffId: \(diffInfo)")
+
 								}
 							} catch GXUITestError.runtimeError(let errorMessage) {
 								XCTFail(errorMessage)
