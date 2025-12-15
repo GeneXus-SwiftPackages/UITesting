@@ -370,16 +370,14 @@ public class SdtUITestSD : VisualTestingServerProvider {
 				
 				let bundleId = Bundle.main.bundleIdentifier!
 				let testName = (testFile as NSString).lastPathComponent.replacingOccurrences(of: ".swift", with: "")
-				
+				let visualTestingProvider = VisualTestingProvider(projectCode: bundleId, testName: testName, reference: reference, serverProvider: self)
+				let capturedImage = GXUITestingHelpers.screenshotImage(from: control, clipToSafeArea: controlName != nil ? .none : .safeArea)
 				do {
-					let visualTestingProvider = VisualTestingProvider(projectCode: bundleId, testName: testName, reference: reference, serverProvider: self)
-					
-					let capturedImage = GXUITestingHelpers.screenshotImage(from: control, clipToSafeArea: controlName != nil ? .none : .safeArea)
 					if let expectedImage = try visualTestingProvider.getReferenceImage() {
 						let expected = expectedImage.cgImage?.data
 						let captured = capturedImage.cgImage?.data
 						
-						if let expected = expected, let captured = captured, expected == captured {
+						if let expected, let captured, expected == captured {
 							// all fine, raw bytes matched
 						}
 						else {
@@ -391,8 +389,8 @@ public class SdtUITestSD : VisualTestingServerProvider {
 								if try expectedImage.perceptuallyCompare(to: capturedCIImage) {
 									// Perceptual comparison passed
 								} else {
-									try? visualTestingProvider.saveImageWithDifference(image: capturedImage)
-									XCTFail("Screenshots do not match for image reference '\(reference)'")
+									let diffID = try visualTestingProvider.saveImageWithDifference(image: capturedImage) ?? "<not available>"
+									XCTFail("Screenshots do not match for image reference '\(reference)'. Resource difference identifier: \(diffID)")
 								}
 							} catch GXUITestError.runtimeError(let errorMessage) {
 								XCTFail(errorMessage)
@@ -401,12 +399,16 @@ public class SdtUITestSD : VisualTestingServerProvider {
 					}
 					else {
 						// did not get image, send new reference image and make the test fail
-						try? visualTestingProvider.saveReferenceImage(image: capturedImage)
-						XCTFail("Server image not available for image reference '\(reference)'")
+						do {
+							let diffID = try visualTestingProvider.saveReferenceImage(image: capturedImage) ?? "<not available>"
+							XCTFail("Server image not available for image reference '\(reference)'. New resource difference identifier: \(diffID)")
+						} catch {
+							XCTFail("Unexpected error saving reference image '\(reference)': \(error)")
+						}
 					}
 				}
 				catch {
-					XCTFail("Unexpected error getting server image for image reference '\(reference)'")
+					XCTFail("Unexpected error getting server image for image reference '\(reference)': \(error)")
 					return
 				}
 			}
