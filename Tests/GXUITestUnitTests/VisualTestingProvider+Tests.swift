@@ -5,56 +5,54 @@
 //  Created by José Echagüe on 10/2/23.
 //
 
-import XCTest
+import Testing
 import OHHTTPStubs
 import OHHTTPStubsSwift
 
 @testable import GXUITest
 
-class VisualTestingProvider_Tests_ProviderWithoutURL : XCTestCase {
+struct VisualTestingProvider_Tests_ProviderWithoutURL {
 	class EmtpyURLServerProvider : VisualTestingServerProvider {
 		static var visualTestingServer: String { "" }
 	}
 	
 	let provider = VisualTestingProvider(projectCode: "ABC", testName: "Test123", reference: "Resouce reference", serverProvider: EmtpyURLServerProvider())
 	
-	func test_GetResource() {
-		XCTAssertThrowsError(try provider.getReferenceImage()) { error in
-			XCTAssertEqual(error as! VisualTestingProvider.VisualTestingError, VisualTestingProvider.VisualTestingError.invalidURL)
+	@Test func getResource() {
+		#expect(throws: VisualTestingProvider.VisualTestingError.invalidURL) {
+			try provider.getReferenceImage()
 		}
 	}
 	
-	func test_SaveResouce() {
-		guard let image = TestHelpers.generateRandomImage() else {
-			XCTFail("Unable to generate image for test")
-			return
-		}
-		
-		XCTAssertThrowsError(try provider.saveReferenceImage(image: image)) { error in
-			XCTAssertEqual(error as! VisualTestingProvider.VisualTestingError, VisualTestingProvider.VisualTestingError.invalidURL)
+	@Test func saveResouce() throws {
+		let image = try #require(TestHelpers.generateRandomImage(), "Unable to generate image for test")
+		#expect(throws: VisualTestingProvider.VisualTestingError.invalidURL) {
+			try provider.saveReferenceImage(image: image)
 		}
 	}
 	
-	func test_SaveDifference() {
-		guard let image = TestHelpers.generateRandomImage() else {
-			XCTFail("Unable to generate image for test")
-			return
-		}
-		
-		XCTAssertThrowsError(try provider.saveImageWithDifference(image: image)) { error in
-			XCTAssertEqual(error as! VisualTestingProvider.VisualTestingError, VisualTestingProvider.VisualTestingError.invalidURL)
+	@Test func saveDifference() throws {
+		let image = try #require(TestHelpers.generateRandomImage(), "Unable to generate image for test")
+		#expect(throws: VisualTestingProvider.VisualTestingError.invalidURL) {
+			try provider.saveImageWithDifference(image: image)
 		}
 	}
 }
 
-class VisualTestingProvider_Tests_ProviderWithURL : XCTestCase {
+@Suite(.serialized) final class VisualTestingProvider_Tests_ProviderWithURL {
 	class ExampleURLServerProvider : VisualTestingServerProvider {
 		static var visualTestingServer: String { "http://example.com" }
 	}
 	
 	let provider =  VisualTestingProvider(projectCode: "ABC", testName: "Test123", reference: "Resouce reference", serverProvider: ExampleURLServerProvider())
 	
-	func test_GetResource() throws {
+	deinit {
+		HTTPStubs.removeAllStubs()
+	}
+	
+	@Test(arguments: [true, false])
+	func getResource(found: Bool) throws {
+		let testImageURL = found ? "http://example.com/image.png" : ""
 		stub(condition: isAbsoluteURLString("http://example.com/GetResource")) { request in
 			self.assertCommonHeaders(in: request.allHTTPHeaderFields)
 			
@@ -69,40 +67,46 @@ class VisualTestingProvider_Tests_ProviderWithURL : XCTestCase {
 			
 			self.assertCommonParameters(in: bodyParams)
 			
-			let responseBody = ["image": "http://example.com/image.png"]
-			guard let responseData = try? JSONSerialization.data(withJSONObject: responseBody, options: []) else {
-				return TestHelpers.fail(with: "Failed to construct response body")
-			}
-			
-			return HTTPStubsResponse(data: responseData,
+			let responseBody = ["image": testImageURL]
+			return HTTPStubsResponse(jsonObject: responseBody,
 									 statusCode: 200,
 									 headers: ["Content-Type":"application/json"])
 		}
 		
-		stub(condition: isAbsoluteURLString("http://example.com/image.png")) { request in
-			guard let randomImage = TestHelpers.generateRandomImage(),
-				  let pngImageData = randomImage.rotatedPngData() else {
-				return TestHelpers.fail(with: "Unable to generate image for response")
+		if found {
+			let testImage = try #require(TestHelpers.generateRandomImage(), "Unable to generate image for response")
+			let pngImageData = try #require(testImage.rotatedPngData(), "Unable to generate image data for response")
+			stub(condition: isAbsoluteURLString(testImageURL)) { request in
+				HTTPStubsResponse(data: pngImageData,
+								  statusCode: 200,
+								  headers: ["Content-Type":"image/png"])
 			}
-			
-			return HTTPStubsResponse(data: pngImageData,
-									 statusCode: 200,
-									 headers: ["Content-Type":"image/png"])
 		}
 		
 		let referenceImage = try provider.getReferenceImage()
-		
-		XCTAssertNotNil(referenceImage)
+		if found {
+			#expect(referenceImage != nil)
+		}
+		else {
+			#expect(referenceImage == nil)
+		}
 	}
 	
-	func test_SaveResource() throws {
-		guard let image = TestHelpers.generateRandomImage() else {
-			XCTFail("Unable to generate image for test")
-			return
+	@Test func getResource_networkError() throws {
+		stub(condition: isAbsoluteURLString("http://example.com/GetResource")) { request in
+			self.assertCommonHeaders(in: request.allHTTPHeaderFields)
+			return HTTPStubsResponse.init(data: Data(), statusCode: 500, headers: nil)
 		}
-		
+		let expectedInnerError = NSError.error(forHTTPURLResponseStatusCode: 500, failingURL: .init(string: "http://example.com/GetResource"))
+		#expect(throws: VisualTestingProvider.VisualTestingError.network(innerError: expectedInnerError)) {
+			try provider.getReferenceImage()
+		}
+	}
+	
+	@Test(arguments: [false, true])
+	func saveResource(includeDiffId: Bool) throws {
+		let image = try #require(TestHelpers.generateRandomImage(), "Unable to generate image for test")
 		let uploadedObjectID = UUID().uuidString
-		
 		stub(condition: isAbsoluteURLString("http://example.com/SetResource/gxobject")) { request in
 			self.assertCommonHeaders(in: request.allHTTPHeaderFields, contentType: "image/png")
 			
@@ -115,16 +119,13 @@ class VisualTestingProvider_Tests_ProviderWithURL : XCTestCase {
 				return errorResponse
 			}
 			
-			XCTAssertTrue(TestHelpers.isPNGImageData(body), "Image representation is not that of a valid PNG image")
+			#expect(TestHelpers.isPNGImageData(body), "Image representation is not that of a valid PNG image")
 			
 			let responseBody = ["object_id": uploadedObjectID]
-			guard let responseData = try? JSONSerialization.data(withJSONObject: responseBody, options: []) else {
-				return TestHelpers.fail(with: "Failed to construct response body")
-			}
-			
-			return HTTPStubsResponse(data: responseData, statusCode: 200, headers: nil)
+			return HTTPStubsResponse(jsonObject: responseBody, statusCode: 200, headers: nil)
 		}
 		
+		let testDiffId = includeDiffId ? UUID().uuidString : nil
 		stub(condition: isAbsoluteURLString("http://example.com/SetResource")) { request in
 			self.assertCommonHeaders(in: request.allHTTPHeaderFields)
 			
@@ -140,44 +141,56 @@ class VisualTestingProvider_Tests_ProviderWithURL : XCTestCase {
 			self.assertCommonParameters(in: bodyParams)
 			
 			// Object ID of uploaded blob
-			XCTAssertEqual(bodyParams["image"] as? String, uploadedObjectID)
-			
-			return HTTPStubsResponse(data: Data(), statusCode: 200, headers: nil)
+			#expect(bodyParams["image"] as? String == uploadedObjectID)
+			if let testDiffId {
+				return HTTPStubsResponse(jsonObject: ["diffId": testDiffId], statusCode: 200, headers: nil)
+			}
+			else {
+				return HTTPStubsResponse(data: Data(), statusCode: 200, headers: nil)
+			}
 		}
-		
-		XCTAssertNoThrow(try provider.saveReferenceImage(image: image))
+		let resultDiffId = try provider.saveReferenceImage(image: image)
+		#expect(resultDiffId == testDiffId)
+	}
+	
+	@Test func saveResource_imageUploadError() throws {
+		let image = try #require(TestHelpers.generateRandomImage(), "Unable to generate image for test")
+		stub(condition: isAbsoluteURLString("http://example.com/SetResource/gxobject")) { request in
+			self.assertCommonHeaders(in: request.allHTTPHeaderFields, contentType: "image/png")
+			return HTTPStubsResponse.init(data: Data(), statusCode: 500, headers: nil)
+		}
+		#expect(throws: VisualTestingProvider.VisualTestingError.failedToUploadImage) {
+			try provider.saveReferenceImage(image: image)
+		}
 	}
 	
 	private func assertCommonParameters(in requestBody: [String : Any])  {
-		XCTAssertEqual(requestBody["projectCode"] as? String, provider.projectCode)
-		XCTAssertEqual(requestBody["resourceReference"] as? String, provider.reference)
-		XCTAssertEqual(requestBody["testCode"] as? String, provider.testName)
-		
-		XCTAssertEqual(requestBody["platform"] as? Int, VisualTestingProvider.Platform.iOS.rawValue)
+		#expect(requestBody["projectCode"] as? String == provider.projectCode)
+		#expect(requestBody["resourceReference"] as? String == provider.reference)
+		#expect(requestBody["testCode"] as? String == provider.testName)
+		#expect(requestBody["platform"] as? Int == VisualTestingProvider.Platform.iOS.rawValue)
 	}
 	
 	private func assertCommonHeaders(in requestHeaders: [String : String]?, contentType: String = "application/json") {
 		guard let requestHeaders else {
-			XCTFail("Request dictionary should not be nil")
+			Issue.record(Comment(rawValue: "Request dictionary should not be nil"))
 			return
 		}
-		
-		XCTAssertEqual(requestHeaders["Content-Type"], contentType)
-		
-		XCTAssertNotNil(requestHeaders["Accept-Language"])
-		XCTAssertNotNil(requestHeaders["DeviceName"])
-		XCTAssertNotNil(requestHeaders["DeviceOSName"])
-		XCTAssertNotNil(requestHeaders["DeviceOSVersion"])
-		XCTAssertNotNil(requestHeaders["DeviceType"])
-		XCTAssertNotNil(requestHeaders["GeneXus-Agent"])
-		XCTAssertNotNil(requestHeaders["GxTZOffset"])
+		#expect(requestHeaders["Content-Type"] == contentType)
+		#expect(requestHeaders["Accept-Language"] != nil)
+		#expect(requestHeaders["DeviceName"] != nil)
+		#expect(requestHeaders["DeviceOSName"] != nil)
+		#expect(requestHeaders["DeviceOSVersion"] != nil)
+		#expect(requestHeaders["DeviceType"] != nil)
+		#expect(requestHeaders["GeneXus-Agent"] != nil)
+		#expect(requestHeaders["GxTZOffset"] != nil)
 	}
 }
 
 class TestHelpers {
 	static func fail(with message: String,
 					 response: HTTPStubsResponse = HTTPStubsResponse.genericClientErrorResponse) -> HTTPStubsResponse {
-		XCTFail(message)
+		Issue.record(Comment(rawValue: message))
 		return response
 	}
 	
@@ -211,11 +224,11 @@ class TestHelpers {
 	}
 	
 	static func readBody(from request: URLRequest) -> Result<Data, HTTPStubsResponse> {
-		guard let contentLength = try? XCTUnwrap(request.value(forHTTPHeaderField: "Content-Length")) else {
+		guard let contentLength = request.value(forHTTPHeaderField: "Content-Length") else {
 			return .failure(self.fail(with: "Unable to read Content-Lenght from headers"))
 		}
 		
-		guard let bufferSize = try? XCTUnwrap(Int(contentLength)) else {
+		guard let bufferSize = Int(contentLength) else {
 			return .failure(self.fail(with: "Unable to read an Int value from Content-Lenght header"))
 		}
 		
@@ -255,7 +268,7 @@ class TestHelpers {
 			return .failure(errorResponse)
 		}
 		
-		guard let bodyParams = try? JSONSerialization.jsonObject(with: body, options: []) as? [String: Any] else {
+		guard let bodyParams = try? JSONSerialization.jsonObject(with: body) as? [String: Any] else {
 			return .failure(self.fail(with: "Failed to read JSON object from request body"))
 		}
 		
