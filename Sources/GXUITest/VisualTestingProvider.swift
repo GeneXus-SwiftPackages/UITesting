@@ -65,14 +65,26 @@ internal class VisualTestingProvider {
 		catch {
 			throw .couldNotSerializeParameters
 		}
-		let postResult: [String: Any] = try awaitPost(toURL: requestURL, data: paramsData, mimeType: "application/json")
+		let postResult: [String: Any] = try awaitPost(toURL: requestURL, data: paramsData)
 		guard let imageURLString = postResult["image"] as? String, !imageURLString.isEmpty else {
 			return nil
 		}
 		return try getImage(from: imageURLString)
 	}
 	
-	func saveReferenceImage(image: UIImage) throws(VisualTestingError) -> String? {
+	func saveReferenceImage(image: UIImage) throws(VisualTestingError) {
+		try saveReferenceImage(image: image, withDiffId: false)
+	}
+	
+	@discardableResult
+	func saveImageWithDifference(image: UIImage) throws(VisualTestingError) -> String? {
+		try saveReferenceImage(image: image, withDiffId: true)
+	}
+	
+	// MARK: - Private
+	
+	@discardableResult
+	private func saveReferenceImage(image: UIImage, withDiffId: Bool) throws(VisualTestingError) -> String? {
 		guard let requestURL = setResourceURL else { throw .invalidURL }
 		let gxuploadCode = try uploadImage(image: image)
 		var params = baseParameters
@@ -84,16 +96,15 @@ internal class VisualTestingProvider {
 		catch {
 			throw .couldNotSerializeParameters
 		}
-		let postResult: [String: Any] = try awaitPost(toURL: requestURL, data: paramsData, mimeType: "application/json", emptyDataResponse: [:])
-		return GXUtilities.string(from: postResult["diffId"])
+		if withDiffId {
+			let postResult: [String: Any] = try awaitPost(toURL: requestURL, data: paramsData, emptyDataResponse: [:])
+			return GXUtilities.string(from: postResult["diffId"])
+		}
+		else {
+			try awaitPostWithoutResponse(toURL: requestURL, data: paramsData)
+			return nil
+		}
 	}
-	
-	func saveImageWithDifference(image: UIImage) throws(VisualTestingError) -> String? {
-		// Use the same service used to save a new reference image
-		try self.saveReferenceImage(image: image)
-	}
-	
-	// MARK: - Private
 	
 	private func getImage(from urlString: String) throws(VisualTestingError) -> UIImage {
 		guard let url = URL(string: urlString) else {
@@ -213,7 +224,11 @@ internal class VisualTestingProvider {
 		return try result.get()
 	}
 	
-	private func awaitPost<ResponseType>(toURL requestURL: URL, data: Data, mimeType: String, emptyDataResponse: ResponseType? = nil) throws(VisualTestingError) -> ResponseType {
+	private func awaitPostWithoutResponse(toURL requestURL: URL, data: Data, mimeType: String = "application/json") throws(VisualTestingError) {
+		_ = try awaitPost(toURL: requestURL, data: data, mimeType: mimeType) as Void
+	}
+	
+	private func awaitPost<ResponseType>(toURL requestURL: URL, data: Data, mimeType: String = "application/json", emptyDataResponse: ResponseType? = nil) throws(VisualTestingError) -> ResponseType {
 		let request = postRequest(forURL: requestURL, data: data, mimeType: mimeType)
 		return try awaitRequest(request, emptyDataResponse: emptyDataResponse)
 	}

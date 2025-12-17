@@ -103,8 +103,8 @@ struct VisualTestingProvider_Tests_ProviderWithoutURL {
 		}
 	}
 	
-	@Test(arguments: [false, true])
-	func saveResource(includeDiffId: Bool) throws {
+	@Test(arguments: [nil, false, true])
+	func saveResource(includeDiffId: Bool?) throws {
 		let image = try #require(TestHelpers.generateRandomImage(), "Unable to generate image for test")
 		let uploadedObjectID = UUID().uuidString
 		stub(condition: isAbsoluteURLString("http://example.com/SetResource/gxobject")) { request in
@@ -125,7 +125,7 @@ struct VisualTestingProvider_Tests_ProviderWithoutURL {
 			return HTTPStubsResponse(jsonObject: responseBody, statusCode: 200, headers: nil)
 		}
 		
-		let testDiffId = includeDiffId ? UUID().uuidString : nil
+		let testDiffId = includeDiffId == true ? UUID().uuidString : nil
 		stub(condition: isAbsoluteURLString("http://example.com/SetResource")) { request in
 			self.assertCommonHeaders(in: request.allHTTPHeaderFields)
 			
@@ -149,8 +149,13 @@ struct VisualTestingProvider_Tests_ProviderWithoutURL {
 				return HTTPStubsResponse(data: Data(), statusCode: 200, headers: nil)
 			}
 		}
-		let resultDiffId = try provider.saveReferenceImage(image: image)
-		#expect(resultDiffId == testDiffId)
+		if includeDiffId == nil {
+			try provider.saveReferenceImage(image: image)
+		}
+		else {
+			let resultDiffId = try provider.saveImageWithDifference(image: image)
+			#expect(resultDiffId == testDiffId)
+		}
 	}
 	
 	@Test func saveResource_imageUploadError() throws {
