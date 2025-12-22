@@ -366,56 +366,64 @@ public class SdtUITestSD : VisualTestingServerProvider {
 		_waitMilliseconds(1000)
 		
 		runActivity(forAction: "VerifyScreenshot", target: controlName, inContext: context) {
-			if let control = findElement() {
-				
-				let bundleId = Bundle.main.bundleIdentifier!
-				let testName = (testFile as NSString).lastPathComponent.replacingOccurrences(of: ".swift", with: "")
-				
-				do {
-					let visualTestingProvider = VisualTestingProvider(projectCode: bundleId, testName: testName, reference: reference, serverProvider: self)
-					
-					let capturedImage = GXUITestingHelpers.screenshotImage(from: control, clipToSafeArea: controlName != nil ? .none : .safeArea)
-					if let expectedImage = try visualTestingProvider.getReferenceImage() {
-						let expected = expectedImage.cgImage?.data
-						let captured = capturedImage.cgImage?.data
-						
-						if let expected = expected, let captured = captured, expected == captured {
-							// all fine, raw bytes matched
-						}
-						else {
-							guard let capturedCIImage = capturedImage.ciImage ?? CIImage(image: capturedImage) else {
-								XCTFail("Unable to obtain CIImage from captured screenshot")
-								return
-							}
-							do {
-								if try expectedImage.perceptuallyCompare(to: capturedCIImage) {
-									// Perceptual comparison passed
-								} else {
-									try? visualTestingProvider.saveImageWithDifference(image: capturedImage)
-									XCTFail("Screenshots do not match for image reference '\(reference)'")
-								}
-							} catch GXUITestError.runtimeError(let errorMessage) {
-								XCTFail(errorMessage)
-							}
-						}
-					}
-					else {
-						// did not get image, send new reference image and make the test fail
-						try? visualTestingProvider.saveReferenceImage(image: capturedImage)
-						XCTFail("Server image not available for image reference '\(reference)'")
-					}
-				}
-				catch {
-					XCTFail("Unexpected error getting server image for image reference '\(reference)'")
-					return
-				}
-			}
-			else {
+			guard let control = findElement() else {
 				if let controlName {
 					XCTFail("Could not find control with name '\(controlName)'")
 				}
 				else {
 					XCTFail("Could not find applications main screen")
+				}
+				return
+			}
+			let bundleId = Bundle.main.bundleIdentifier!
+			let testName = (testFile as NSString).lastPathComponent.replacingOccurrences(of: ".swift", with: "")
+			let visualTestingProvider = VisualTestingProvider(projectCode: bundleId, testName: testName, reference: reference, serverProvider: self)
+			let capturedImage = GXUITestingHelpers.screenshotImage(from: control, clipToSafeArea: controlName != nil ? .none : .safeArea)
+			let expectedImage: UIImage?
+			do {
+				expectedImage = try visualTestingProvider.getReferenceImage()
+			}
+			catch {
+				XCTFail("Unexpected error getting server image for image reference '\(reference)': \(error)")
+				return
+			}
+			guard let expectedImage else {
+				// did not get image, send new reference image and make the test fail
+				do {
+					try visualTestingProvider.saveReferenceImage(image: capturedImage)
+					XCTFail("Server image not available for image reference '\(reference)'")
+				}
+				catch {
+					XCTFail("Unexpected error saving reference image '\(reference)': \(error)")
+				}
+				return
+			}
+			let expected = expectedImage.cgImage?.data
+			let captured = capturedImage.cgImage?.data
+			if let expected, let captured, expected == captured {
+				// all fine, raw bytes matched
+			}
+			else {
+				guard let capturedCIImage = capturedImage.ciImage ?? CIImage(image: capturedImage) else {
+					XCTFail("Unable to obtain CIImage from captured screenshot")
+					return
+				}
+				let equals: Bool
+				do {
+					equals = try expectedImage.perceptuallyCompare(to: capturedCIImage)
+				}
+				catch {
+					XCTFail(error.localizedDescription)
+					return
+				}
+				if !equals {
+					do {
+						let diffID = try visualTestingProvider.saveImageWithDifference(image: capturedImage) ?? "<not available>"
+						XCTFail("'\(reference)' doesn't match with previous screenshot. The resource difference Id generated for this screenshot is '\(diffID)'")
+					}
+					catch {
+						XCTFail("Unexpected error saving reference image '\(reference)': \(error)")
+					}
 				}
 			}
 		}

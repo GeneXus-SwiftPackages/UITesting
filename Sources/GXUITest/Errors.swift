@@ -9,4 +9,11 @@ import Foundation
 
 internal enum GXUITestError : Error {
 	case runtimeError(String)
+	
+	var localizedDescription: String {
+		switch self {
+		case .runtimeError(let message):
+			return message
+		}
+	}
 }

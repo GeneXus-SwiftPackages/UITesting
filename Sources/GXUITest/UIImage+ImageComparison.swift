@@ -38,17 +38,17 @@ private let PIXEL_THRESHOLD = 1 - 0.001 // At least 99.9% of pixels must match
 
 extension UIImage {
 	
-	func perceptuallyCompare(to fiduciaryImage: CIImage, pixelPrecision: Float = Float(PIXEL_THRESHOLD), perceptualPrecision: Float = Float(DELTA_E_THRESHOLD)) throws -> Bool {
+	func perceptuallyCompare(to fiduciaryImage: CIImage, pixelPrecision: Float = Float(PIXEL_THRESHOLD), perceptualPrecision: Float = Float(DELTA_E_THRESHOLD)) throws(GXUITestError) -> Bool {
 		return try self.perceptuallyCompare(toFiduciary: fiduciaryImage, pixelPrecision: Double(pixelPrecision), perceptualPrecision: Double(perceptualPrecision))
 	}
 	
-	func perceptuallyCompare(toFiduciary fiduciary: UIImage, pixelPrecision: Double = PIXEL_THRESHOLD, perceptualPrecision: Double = DELTA_E_THRESHOLD) throws -> Bool {
+	func perceptuallyCompare(toFiduciary fiduciary: UIImage, pixelPrecision: Double = PIXEL_THRESHOLD, perceptualPrecision: Double = DELTA_E_THRESHOLD) throws(GXUITestError) -> Bool {
 		return try perceptuallyCompare(toFiduciary: try fiduciary.nonOptionalCIImage(), pixelPrecision: pixelPrecision, perceptualPrecision: perceptualPrecision)
 	}
 }
 
 private extension UIImage {
-	func perceptuallyCompare(toFiduciary fiduciary: CIImage, pixelPrecision: Double = PIXEL_THRESHOLD, perceptualPrecision: Double = DELTA_E_THRESHOLD) throws -> Bool {
+	func perceptuallyCompare(toFiduciary fiduciary: CIImage, pixelPrecision: Double = PIXEL_THRESHOLD, perceptualPrecision: Double = DELTA_E_THRESHOLD) throws(GXUITestError) -> Bool {
 		guard let rawDeltaE = try self.cie94(fiduciary: fiduciary) else { return false }
 		
 		let thresholdedDeltaE = try rawDeltaE.thresholdedImage(threshold: Float(perceptualPrecision))
@@ -67,7 +67,7 @@ private extension UIImage {
 			(actualPerceptualPrecision != 1 || averagePixel.isZero || perceptualPrecision != 1) // Account for rounding errors
 	}
 	
-	func cie94(fiduciary: CIImage) throws -> CIImage? {
+	func cie94(fiduciary: CIImage) throws(GXUITestError) -> CIImage? {
 		let ciImage = try self.nonOptionalCIImage()
 		
 		// DeltaE comparison should only de done on images with the same extent (size)
@@ -77,7 +77,7 @@ private extension UIImage {
 		return ciImage.applyingFilter("CILabDeltaE", parameters: ["inputImage2": fiduciary])
 	}
 	
-	func nonOptionalCIImage() throws -> CIImage {
+	func nonOptionalCIImage() throws(GXUITestError) -> CIImage {
 		guard let ciImage = self.ciImage ?? CoreImage.CIImage(image: self) else {
 			throw GXUITestError.runtimeError("Unable to obtain CIImage from current image")
 		}
@@ -87,7 +87,7 @@ private extension UIImage {
 }
 
 private extension CIImage {
-	func thresholdedImage(threshold: Float) throws -> CIImage {
+	func thresholdedImage(threshold: Float) throws(GXUITestError) -> CIImage {
 		var threasholdedImage: CIImage
 		do {
 			threasholdedImage = try ThresholdImageProcessorKernel.apply(
@@ -136,7 +136,7 @@ private final class ThresholdImageProcessorKernel: CIImageProcessorKernel {
 	static let inputThresholdKey = "thresholdValue"
 	static let device = MTLCreateSystemDefaultDevice()
 	
-	override class func process(with inputs: [CIImageProcessorInput]?, arguments: [String: Any]?, output: CIImageProcessorOutput) throws {
+	override class func process(with inputs: [CIImageProcessorInput]?, arguments: [String: Any]?, output: CIImageProcessorOutput) throws(GXUITestError) {
 		guard
 			let device = device,
 			let commandBuffer = output.metalCommandBuffer,
