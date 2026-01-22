@@ -49,7 +49,7 @@ jobs:
 
             - name: Upload integration tests results
               if: ${{ failure() }}
-              uses: actions/upload-artifact@v3
+              uses: actions/upload-artifact@v4
               with:
                 name: integration-tests-results-${{ matrix.xcode-version }}-${{ matrix.device }}.xcresult
                 path: ${{ env.INTEGRATION_TESTS_RESULTS_PATH }}
