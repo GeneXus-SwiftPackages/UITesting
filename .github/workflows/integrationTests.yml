@@ -11,13 +11,13 @@ jobs:
     integration-tests:
         strategy:
             matrix:
-              xcode-version: ["14.3.1", "15.0"]
-              device: [iPhone 14, iPhone 15 Pro]
+              xcode-version: ["26.2", "26.0.1"]
+              device: [iPhone 17, iPhone 17 Pro]
               exclude:
-                - xcode-version: "14.3.1"
-                  device: iPhone 15 Pro
+                - xcode-version: "26.0.1"
+                  device: iPhone 17 Pro
         
-        runs-on: [macos-13-xl]
+        runs-on: [macos-26-xlarge]
     
         defaults:
           run:

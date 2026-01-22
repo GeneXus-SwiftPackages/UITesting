@@ -1071,6 +1071,7 @@ fileprivate enum GXAccessibilityTag: String {
 	case root = "Root"
 	case loadingCell = "LoadingCell"
 	case moreAction = "MoreAction"
+	case appBarFloating = "AppBar-Floating"
 	
 	var tagString: String {
 		":-gx:\(self.rawValue):-:"
@@ -1079,7 +1080,9 @@ fileprivate enum GXAccessibilityTag: String {
 
 fileprivate func _applicationBarQuery() -> XCUIElementQuery {
 	let barsElementTypes: [XCUIElement.ElementType] = [.navigationBar, .toolbar]
-	let barsPredicate = NSPredicate(format: "elementType IN %@", argumentArray: [barsElementTypes.map(\.rawValue)])
+	let typePredicate = NSPredicate(format: "elementType IN %@", argumentArray: [barsElementTypes.map(\.rawValue)])
+	let idPredicate = NSPredicate(format: "identifier == %@", GXAccessibilityTag.appBarFloating.tagString)
+	let barsPredicate = NSCompoundPredicate(orPredicateWithSubpredicates: [typePredicate, idPredicate])
 	return XCUIApplication().descendants(matching: .any).matching(barsPredicate)
 }
 
