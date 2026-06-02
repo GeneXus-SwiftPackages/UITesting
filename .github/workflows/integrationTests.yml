@@ -11,7 +11,7 @@ jobs:
     integration-tests:
         strategy:
             matrix:
-              xcode-version: ["26.2", "26.0.1"]
+              xcode-version: ["26.5", "26.0.1"]
               device: [iPhone 17, iPhone 17 Pro]
               exclude:
                 - xcode-version: "26.0.1"
