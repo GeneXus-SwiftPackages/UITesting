@@ -25,8 +25,19 @@ internal extension XCUIElement {
 	}
 	
 	private func dismissKeyboard() {
-		/// As documented in example: https://developer.apple.com/documentation/xctest/grouping-tests-into-substeps-with-activities#Organize-Long-Test-Methods-into-Substeps
-		XCUIApplication().children(matching: .window).firstMatch.tap()
+		/// Based on documented example: https://developer.apple.com/documentation/xctest/grouping-tests-into-substeps-with-activities#Organize-Long-Test-Methods-into-Substeps
+		let centerVector = CGVector(dx: 0.5, dy: 0.5)
+		let window = XCUIApplication().children(matching: .window).firstMatch
+		let windowCenterCoordinate = window.coordinate(withNormalizedOffset: centerVector)
+		if #available(iOS 26, tvOS 26, watchOS 26, visionOS 26, *) {
+			/// On iOS 26 with Liquid Glass design, if the target coordinate is within the element frame, it does not dismiss the keyboard. Tap on the bottom rigth corner as a WA.
+			guard !frame.contains(windowCenterCoordinate.screenPoint) else {
+				let cornerVector = CGVector(dx: 1, dy: 1)
+				coordinate(withNormalizedOffset: cornerVector).tap()
+				return
+			}
+		}
+		windowCenterCoordinate.tap()
 	}
 	
 	private func tapContextMenuItem(_ menuItem: String, required: Bool = true) {
@@ -46,6 +57,9 @@ internal extension XCUIElement {
 					exists = menuItemElement.waitForExistence(timeout: waitForExistenceTimeout)
 				}
 				guard exists || required else {
+					if menuItems.firstMatch.exists {
+						tap() /// Dismiss existing context menu if it does not include the menuItemElement
+					}
 					return
 				}
 			}
