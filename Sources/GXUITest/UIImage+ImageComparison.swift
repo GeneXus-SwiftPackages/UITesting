@@ -136,7 +136,7 @@ private final class ThresholdImageProcessorKernel: CIImageProcessorKernel {
 	static let inputThresholdKey = "thresholdValue"
 	static let device = MTLCreateSystemDefaultDevice()
 	
-	override class func process(with inputs: [CIImageProcessorInput]?, arguments: [String: Any]?, output: CIImageProcessorOutput) throws(GXUITestError) {
+	override class func process(with inputs: [CIImageProcessorInput]?, arguments: [String: Any]?, output: CIImageProcessorOutput) throws {
 		guard
 			let device = device,
 			let commandBuffer = output.metalCommandBuffer,

@@ -28,7 +28,7 @@ jobs:
           cancel-in-progress: true
 
         env:
-          XCODE_VERSION_PATH: /Applications/Xcode_26.2.app
+          XCODE_VERSION_PATH: /Applications/Xcode_26.5.app
           TEST_DESTINATION: platform=iOS Simulator,name=iPhone 17,OS=latest
 
         steps:
