@@ -1093,8 +1093,14 @@ fileprivate func _findApplicationBarElement(_ searchIds: [ElementSearchIdentifie
 	var controlElement = _findElement(searchIds, searchRoot: .second(appBar), elementTypes: elementTypes, timeout: 0)
 	if controlElement == nil {
 		/// Low priority actions may not be present directly on screen, they may appear in an action sheet after tapping the "more" button
-		let moreActionsButton = appBar.descendants(matching: .button).matching(identifier: GXAccessibilityTag.moreAction.tagString).firstMatch
-		if moreActionsButton.exists {
+		let moreActionsButton: XCUIElement? = {
+			let moreActionIdentifiers = ["TopOverflowBarButtonItem", GXAccessibilityTag.moreAction.tagString]
+			return moreActionIdentifiers.compactMapFirst { identifier in
+				let button = appBar.descendants(matching: .button).matching(identifier: identifier).firstMatch
+				return button.exists ? button : nil
+			}
+		}()
+		if let moreActionsButton {
 			moreActionsButton.tap()
 			let sheetElement = XCUIApplication().sheets.firstMatch
 			if sheetElement.exists {
